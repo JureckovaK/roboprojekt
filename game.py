@@ -47,7 +47,7 @@ def move_once(t):
 
     for robot in state.robots:
         #robot.apply_card_effect(state)
-        #robot.walk(3, state)
+        robot.walk(1, state)
         print(robot)
     #state.robots[3].walk(-1, state)
     #state.robots[3].rotate(Rotation.RIGHT)

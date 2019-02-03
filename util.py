@@ -174,7 +174,7 @@ class HoleTile(Tile):
 class BeltTile(Tile):
     def __init__(self, direction, path, properties):
         self.crossroads = properties[0]["value"]
-        self.belt_direction = self.transform_direction(properties[1]["value"])
+        self.belt_rotation = self.transform_direction(properties[1]["value"])
         self.express = properties[2]["value"]
         super().__init__(direction, path, properties)
 

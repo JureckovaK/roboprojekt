@@ -348,15 +348,22 @@ def move_belts(state, express):
         for robot in robots_to_move:
             coordinates.append(robot.coordinates)
         for robot, tile in zip(robots_to_move, belt_tiles):
-            if tile.direction == tile.belt_direction:
-                direction = tile.direction
-            else:
-                direction = tile.direction.get_new_direction(tile.belt_direction)
+            direction = tile.direction.get_new_direction(tile.belt_rotation)
             (x, y) = get_next_coordinates(robot.coordinates, direction)
             if not (x, y) in coordinates:
                 robot.move(direction, 1, state)
                 robots_to_move.remove(robot)
                 belt_tiles.remove(tile)
+                for tile in state.get_tiles(robot.coordinates):
+                    if isinstance(tile, BeltTile):
+                        if tile.belt_rotation == Rotation.U_TURN:
+                            if tile.direction.get_new_direction(Rotation.RIGHT) == direction:
+                                robot.rotate(Rotation.RIGHT)
+                            else:
+                                robot.rotate(Rotation.LEFT)
+                        elif isinstance(tile.belt_rotation, Rotation):
+                            if direction == tile.direction:
+                                robot.rotate(tile.belt_rotation)
 
 
 def apply_tile_effects(state):
