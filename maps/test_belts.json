@@ -247,11 +247,6 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":0
@@ -269,11 +264,6 @@
                  "imageheight":64,
                  "imagewidth":64,
                  "properties":[
-                        {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        }, 
                         {
                          "name":"direction",
                          "type":"int",
@@ -293,11 +283,6 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":90
@@ -315,11 +300,6 @@
                  "imageheight":64,
                  "imagewidth":64,
                  "properties":[
-                        {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        }, 
                         {
                          "name":"direction",
                          "type":"int",
@@ -339,11 +319,6 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":90
@@ -361,11 +336,6 @@
                  "imageheight":64,
                  "imagewidth":64,
                  "properties":[
-                        {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        }, 
                         {
                          "name":"direction",
                          "type":"int",
@@ -385,11 +355,6 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":0
@@ -407,11 +372,6 @@
                  "imageheight":64,
                  "imagewidth":64,
                  "properties":[
-                        {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        }, 
                         {
                          "name":"direction",
                          "type":"int",
@@ -431,11 +391,6 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":-90
@@ -453,11 +408,6 @@
                  "imageheight":64,
                  "imagewidth":64,
                  "properties":[
-                        {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        }, 
                         {
                          "name":"direction",
                          "type":"int",
@@ -477,11 +427,6 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":90
@@ -499,11 +444,6 @@
                  "imageheight":64,
                  "imagewidth":64,
                  "properties":[
-                        {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        }, 
                         {
                          "name":"direction",
                          "type":"int",

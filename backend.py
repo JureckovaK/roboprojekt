@@ -342,7 +342,6 @@ def move_belts(state, express):
                 elif express is False:
                     robots_to_move.append(robot)
                     belt_tiles.append(tile)
-
     while robots_to_move != []:
         coordinates = []
         for robot in robots_to_move:
@@ -371,15 +370,9 @@ def apply_tile_effects(state):
     Apply tile effects according to game rules.
     """
     # Activate belts
-    # 1) Express belts move 1 space
-    #  1.1 Get order of robots on express belts
-    #  1.2 Move robots
-
-    # 2) Express belts and normal belts move 1 space
-    #  2.1 Get order of robots on express belts
-    #  2.2 Move robots
     move_belts(state, True)
     move_belts(state, False)
+
     # Activate pusher
     for robot in [robot for robot in state.robots if not robot.inactive]:
         for tile in state.get_tiles(robot.coordinates):

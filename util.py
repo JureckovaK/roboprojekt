@@ -91,9 +91,6 @@ class Tile:
         """
         return robot
 
-    def move_robot(self, robot, state):
-        return robot
-
     def push_robot(self, robot, state):
         """
         Move robot by one tile in specific game round.
@@ -173,9 +170,8 @@ class HoleTile(Tile):
 
 class BeltTile(Tile):
     def __init__(self, direction, path, properties):
-        self.crossroads = properties[0]["value"]
-        self.belt_rotation = self.transform_direction(properties[1]["value"])
-        self.express = properties[2]["value"]
+        self.belt_rotation = self.transform_direction(properties[0]["value"])
+        self.express = properties[1]["value"]
         super().__init__(direction, path, properties)
 
     def transform_direction(self, direction_integer):
@@ -191,11 +187,6 @@ class BeltTile(Tile):
             return Rotation.LEFT
         if direction_integer == 180:
             return Rotation.U_TURN
-
-    def move_robot(self, state):
-        # 1) Express belts move 1 space
-        # 2) Express belts and normal belts move 1 space
-        pass
 
 
 class PusherTile(Tile):
