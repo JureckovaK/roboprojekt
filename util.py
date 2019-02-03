@@ -177,7 +177,7 @@ class BeltTile(Tile):
     def transform_direction(self, direction_integer):
         """
         Method to transform the integer taken from json properties
-         to valid Direction class instance for later processing.
+        to valid Direction or Rotation class instance for later processing.
         """
         if direction_integer == 0:
             return Direction.N

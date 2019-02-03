@@ -331,38 +331,61 @@ def check_wall(coordinates, direction, state):
 
 
 def move_belts(state, express):
+    """
+    Move robots on convoyer belts by the type of belt - express or normal.
+
+    state: State class
+    express: a boolean, True - express belts, False - normal belts.
+    """
+    # Get all robots on convoyer belts according to their types.
+    # Get a list for robots and a list for their belt tiles.
     robots_to_move = []
     belt_tiles = []
     for robot in state.robots:
         for tile in state.get_tiles(robot.coordinates):
             if isinstance(tile, BeltTile):
+                # Express belts
                 if express and tile.express:
                     robots_to_move.append(robot)
                     belt_tiles.append(tile)
+                # Normal belts
                 elif express is False:
                     robots_to_move.append(robot)
                     belt_tiles.append(tile)
-    while robots_to_move != []:
+    # Now move all robots
+    while robots_to_move:
+        # Get coordinates of all robots to be moved by belts.
         coordinates = []
         for robot in robots_to_move:
             coordinates.append(robot.coordinates)
         for robot, tile in zip(robots_to_move, belt_tiles):
+            # Get direction in which robot will be moved.
             direction = tile.direction.get_new_direction(tile.belt_rotation)
+            # Get next coordinates on which robot will be moved.
             (x, y) = get_next_coordinates(robot.coordinates, direction)
+            # Check that there isn't other robot that is also on belt tile.
+            # That robot should be moved first.
             if not (x, y) in coordinates:
+                # Now robot is moved by belt.
                 robot.move(direction, 1, state)
+                # Remove robot and his tile of coressponding lists.
                 robots_to_move.remove(robot)
                 belt_tiles.remove(tile)
-                for tile in state.get_tiles(robot.coordinates):
-                    if isinstance(tile, BeltTile):
-                        if tile.belt_rotation == Rotation.U_TURN:
-                            if tile.direction.get_new_direction(Rotation.RIGHT) == direction:
-                                robot.rotate(Rotation.RIGHT)
-                            else:
-                                robot.rotate(Rotation.LEFT)
-                        elif isinstance(tile.belt_rotation, Rotation):
-                            if direction == tile.direction:
-                                robot.rotate(tile.belt_rotation)
+                # Check that robot was moved.
+                if robot.coordinates == (x, y):
+                    # Check if the next tile is rotating belt.
+                    for tile in state.get_tiles(robot.coordinates):
+                        if isinstance(tile, BeltTile):
+                            # Special condition for one type of crossroads.
+                            if tile.belt_rotation == Rotation.U_TURN:
+                                if tile.direction.get_new_direction(Rotation.RIGHT) == direction:
+                                    robot.rotate(Rotation.RIGHT)
+                                else:
+                                    robot.rotate(Rotation.LEFT)
+                            # All other rotating belts.
+                            elif isinstance(tile.belt_rotation, Rotation):
+                                if direction == tile.direction:
+                                    robot.rotate(tile.belt_rotation)
 
 
 def apply_tile_effects(state):
