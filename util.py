@@ -174,13 +174,25 @@ class HoleTile(Tile):
 class BeltTile(Tile):
     def __init__(self, direction, path, properties):
         self.crossroads = properties[0]["value"]
-        self.belt_direction = properties[1]["value"]
-        self.move_count = properties[2]["value"]
+        self.belt_direction = self.transform_direction(properties[1]["value"])
+        self.express = properties[2]["value"]
         super().__init__(direction, path, properties)
 
-    def move_robot(self, state):
-        # TO DO!
+    def transform_direction(self, direction_integer):
+        """
+        Method to transform the integer taken from json properties
+         to valid Direction class instance for later processing.
+        """
+        if direction_integer == 0:
+            return Direction.N
+        if direction_integer == 90:
+            return Rotation.RIGHT
+        if direction_integer == -90:
+            return Rotation.LEFT
+        if direction_integer == 180:
+            return Rotation.U_TURN
 
+    def move_robot(self, state):
         # 1) Express belts move 1 space
         # 2) Express belts and normal belts move 1 space
         pass

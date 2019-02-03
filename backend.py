@@ -3,7 +3,7 @@ Backend file contains functions for the game logic.
 """
 from pathlib import Path
 import random
-from util import Direction, Rotation, HoleTile, get_next_coordinates
+from util import Direction, Rotation, HoleTile, BeltTile, get_next_coordinates
 from loading import get_board
 
 
@@ -330,14 +330,49 @@ def check_wall(coordinates, direction, state):
             return True
 
 
+def move_belts(state, express):
+    robots_to_move = []
+    belt_tiles = []
+    for robot in state.robots:
+        for tile in state.get_tiles(robot.coordinates):
+            if isinstance(tile, BeltTile):
+                if express and tile.express:
+                    robots_to_move.append(robot)
+                    belt_tiles.append(tile)
+                elif express is False:
+                    robots_to_move.append(robot)
+                    belt_tiles.append(tile)
+
+    while robots_to_move != []:
+        coordinates = []
+        for robot in robots_to_move:
+            coordinates.append(robot.coordinates)
+        for robot, tile in zip(robots_to_move, belt_tiles):
+            if tile.direction == tile.belt_direction:
+                direction = tile.direction
+            else:
+                direction = tile.direction.get_new_direction(tile.belt_direction)
+            (x, y) = get_next_coordinates(robot.coordinates, direction)
+            if not (x, y) in coordinates:
+                robot.move(direction, 1, state)
+                robots_to_move.remove(robot)
+                belt_tiles.remove(tile)
+
+
 def apply_tile_effects(state):
     """
     Apply tile effects according to game rules.
     """
     # Activate belts
-        # 1) Express belts move 1 space
-        # 2) Express belts and normal belts move 1 space
+    # 1) Express belts move 1 space
+    #  1.1 Get order of robots on express belts
+    #  1.2 Move robots
 
+    # 2) Express belts and normal belts move 1 space
+    #  2.1 Get order of robots on express belts
+    #  2.2 Move robots
+    move_belts(state, True)
+    move_belts(state, False)
     # Activate pusher
     for robot in [robot for robot in state.robots if not robot.inactive]:
         for tile in state.get_tiles(robot.coordinates):
