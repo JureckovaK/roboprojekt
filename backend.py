@@ -332,11 +332,13 @@ def check_wall(coordinates, direction, state):
 
 def move_belts(state):
     """
-    Move robots on convoyer belts by the type of belt - express or normal.
+    Move robots on convoyer belts.
 
     state: State class
-    express: a boolean, True - express belts, False - normal belts.
     """
+    # According to rules:
+    # First, express belts move robots by one tile (express attribute is set to True).
+    # Then all belts move robots by one tile (express attribute is set to False).
     for express in [True, False]:
         robots_to_move, belt_tiles = get_robots_on_belts(state, express)
         # Now move all robots
@@ -367,7 +369,10 @@ def move_belts(state):
 
 def get_robots_on_belts(state, express):
     """
-    Get all robots on convoyer belts according to their types.
+    Get all robots on convoyer belts according to the type of belt.
+
+    state: State object containg game board, robots and size of game board
+    express: a boolean, True - express belts, False - normal belts.
 
     Return a list for robots and a list for their belt tiles.
     """
