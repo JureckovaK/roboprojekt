@@ -91,6 +91,9 @@ class Tile:
         """
         return robot
 
+    def rotate_robot_on_belt(self, robot, direction):
+        return robot
+
     def push_robot(self, robot, state):
         """
         Move robot by one tile in specific game round.
@@ -187,6 +190,24 @@ class BeltTile(Tile):
             return Rotation.LEFT
         if direction_integer == 180:
             return Rotation.U_TURN
+
+    def rotate_robot_on_belt(self, robot, direction):
+        """
+        Rotate robot on rotating convoyer belts. If robot will be rotated,
+        is decided by the direction he came to this belt tile.
+        """
+        # Special condition for one type of crossroads:
+        # If crossroads have Direction.N, then the special type has exit
+        # on south part of tile.
+        if self.belt_rotation == Rotation.U_TURN:
+            if self.direction.get_new_direction(Rotation.RIGHT) == direction:
+                robot.rotate(Rotation.RIGHT)
+            else:
+                robot.rotate(Rotation.LEFT)
+        # All other rotating belts or crossroads.
+        elif isinstance(self.belt_rotation, Rotation):
+                if direction == self.direction:
+                    robot.rotate(self.belt_rotation)
 
 
 class PusherTile(Tile):
