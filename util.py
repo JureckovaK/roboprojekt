@@ -91,10 +91,27 @@ class Tile:
         """
         return robot
 
-    def check_belts(self, express):
+    def check_belts(self, express_belts):
+        '''
+        Check that current tile is convoyer belt of desired type.
+
+        express_belts: a boolean, True for express belts, False for all belts.
+
+        Return a boolean.
+
+        True - Tile is convoyer belt of desired type.
+        False - Tile isn't convoyer belt or it's a wrong type of belt.
+        '''
         return False
 
     def rotate_robot_on_belt(self, robot, direction):
+        """
+        Rotate robot on rotating convoyer belts. If robot will be rotated,
+        is decided by the direction he entered a tile.
+
+        robot: Robot class
+        direction: direction from which robot entered a tile
+        """
         return robot
 
     def push_robot(self, robot, state):
@@ -205,10 +222,6 @@ class BeltTile(Tile):
             return False
 
     def rotate_robot_on_belt(self, robot, direction):
-        """
-        Rotate robot on rotating convoyer belts. If robot will be rotated,
-        is decided by the direction he came to this belt tile.
-        """
         # Special condition for one type of crossroads:
         # If crossroads have Direction.N, then the special type has exit
         # on south part of tile.

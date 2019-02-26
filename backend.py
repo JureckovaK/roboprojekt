@@ -345,9 +345,9 @@ def move_belts(state):
     # According to rules:
     # First, express belts move robots by one tile (express attribute is set to True).
     # Then all belts move robots by one tile (express attribute is set to False).
-    for express in [True, False]:
+    for express_belts in [True, False]:
         # Get robots on belts: robots, their belt tiles and coordinates
-        robots_to_move = get_robots_on_belts(state, express)
+        robots_to_move = get_robots_on_belts(state, express_belts)
         # Now move all robots
         while robots_to_move:
             for coordinate, (robot, tile) in robots_to_move.items():
