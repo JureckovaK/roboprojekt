@@ -176,7 +176,7 @@ class HoleTile(Tile):
 
 class BeltTile(Tile):
     def __init__(self, direction, path, properties):
-        self.belt_rotation = self.transform_direction(properties[0]["value"])
+        self.direction_out = self.transform_direction(properties[0]["value"])
         self.express = properties[1]["value"]
         super().__init__(direction, path, properties)
 
@@ -212,15 +212,15 @@ class BeltTile(Tile):
         # Special condition for one type of crossroads:
         # If crossroads have Direction.N, then the special type has exit
         # on south part of tile.
-        if self.belt_rotation == Rotation.U_TURN:
+        if self.direction_out == Rotation.U_TURN:
             if self.direction.get_new_direction(Rotation.RIGHT) == direction:
                 robot.rotate(Rotation.RIGHT)
             else:
                 robot.rotate(Rotation.LEFT)
         # All other rotating belts or crossroads.
-        elif isinstance(self.belt_rotation, Rotation):
+        elif isinstance(self.direction_out, Rotation):
                 if direction == self.direction:
-                    robot.rotate(self.belt_rotation)
+                    robot.rotate(self.direction_out)
 
 
 class PusherTile(Tile):

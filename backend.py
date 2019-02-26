@@ -352,7 +352,7 @@ def move_belts(state):
         while robots_to_move:
             for coordinate, (robot, tile) in robots_to_move.items():
                 # Get direction in which robot will be moved.
-                direction = tile.direction.get_new_direction(tile.belt_rotation)
+                direction = tile.direction.get_new_direction(tile.direction_out)
                 # Get next coordinates on which robot will be moved.
                 next_coordinate = get_next_coordinates(coordinate, direction)
                 # Check that there isn't other robot that is also on belt tile.
