@@ -346,56 +346,45 @@ def move_belts(state):
     # First, express belts move robots by one tile (express attribute is set to True).
     # Then all belts move robots by one tile (express attribute is set to False).
     for express in [True, False]:
-        robots_to_move, belt_tiles = get_robots_on_belts(state, express)
+        # Get robots on belts: robots, their belt tiles and coordinates
+        robots_to_move = get_robots_on_belts(state, express)
         # Now move all robots
         while robots_to_move:
-            # Get coordinates of all robots to be moved by belts.
-            coordinates = []
-            for robot in robots_to_move:
-                coordinates.append(robot.coordinates)
-            for robot, tile in zip(robots_to_move, belt_tiles):
+            for coordinate, (robot, tile) in robots_to_move.items():
                 # Get direction in which robot will be moved.
                 direction = tile.direction.get_new_direction(tile.belt_rotation)
                 # Get next coordinates on which robot will be moved.
-                (x, y) = get_next_coordinates(robot.coordinates, direction)
+                next_coordinate = get_next_coordinates(coordinate, direction)
                 # Check that there isn't other robot that is also on belt tile.
                 # That robot should be moved first.
-                if not (x, y) in coordinates:
+                if next_coordinate not in robots_to_move:
                     # Now robot is moved by belt.
                     robot.move(direction, 1, state)
-                    # Remove robot and his tile of coressponding lists.
-                    robots_to_move.remove(robot)
-                    belt_tiles.remove(tile)
                     # Check that robot was moved.
-                    if robot.coordinates == (x, y):
+                    if robot.coordinates == next_coordinate:
                         # Check if the next tile is rotating belt.
                         for tile in state.get_tiles(robot.coordinates):
                             tile.rotate_robot_on_belt(robot, direction)
+                    # Delete cooresponding entry in dictionary.
+                    del robots_to_move[coordinate]
+                    break
 
 
-def get_robots_on_belts(state, express):
+def get_robots_on_belts(state, express_belts):
     """
     Get all robots on convoyer belts according to the type of belt.
 
     state: State object containg game board, robots and size of game board
-    express: a boolean, True - express belts, False - normal belts.
+    express_belts: a boolean, True - for express belts, False - for all belts.
 
-    Return a list for robots and a list for their belt tiles.
+    Return a dictionary of coordinates as keys and a tuple of robot and its tile as values.
     """
-    robots_to_move = []
-    belt_tiles = []
+    robots_on_belts = {}
     for robot in state.robots:
         for tile in state.get_tiles(robot.coordinates):
-            if isinstance(tile, BeltTile):
-                # Express belts
-                if express is tile.express:
-                    robots_to_move.append(robot)
-                    belt_tiles.append(tile)
-                # Normal belts
-                elif express is False:
-                    robots_to_move.append(robot)
-                    belt_tiles.append(tile)
-    return robots_to_move, belt_tiles
+            if tile.check_belts(express_belts):
+                robots_on_belts[robot.coordinates] = (robot, tile)
+    return robots_on_belts
 
 
 def apply_tile_effects(state):

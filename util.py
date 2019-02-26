@@ -91,6 +91,9 @@ class Tile:
         """
         return robot
 
+    def check_belts(self, express):
+        return False
+
     def rotate_robot_on_belt(self, robot, direction):
         return robot
 
@@ -190,6 +193,16 @@ class BeltTile(Tile):
             return Rotation.LEFT
         if direction_integer == 180:
             return Rotation.U_TURN
+
+    def check_belts(self, express_belts):
+        # Only express belts
+        if self.express is express_belts:
+            return True
+        # All belts
+        elif express_belts is False:
+            return True
+        else:
+            return False
 
     def rotate_robot_on_belt(self, robot, direction):
         """
