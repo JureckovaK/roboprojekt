@@ -89,7 +89,7 @@ class Robot:
         """
         Move a robot to new coordinates according to direction of the move.
 
-        When robot is moved by game elements (convoyer belt or pusher),
+        When robot is moved by game elements (conveyor belt or pusher),
         he doesn't have enough power to push other robots. If there is a robot
         in the way, the movement is stopped.
         """
@@ -338,7 +338,7 @@ def check_wall(coordinates, direction, state):
 
 def move_belts(state):
     """
-    Move robots on convoyer belts.
+    Move robots on conveyor belts.
 
     state: State class
     """
@@ -372,7 +372,7 @@ def move_belts(state):
 
 def get_robots_on_belts(state, express_belts):
     """
-    Get all robots on convoyer belts according to the type of belt.
+    Get all robots on conveyor belts according to the type of belt.
 
     state: State object containg game board, robots and size of game board
     express_belts: a boolean, True - for express belts, False - for all belts.
