@@ -355,6 +355,9 @@ def test_robot_is_pushed_out_of_the_board(tile):
                          ((6, 7), (6, 6)),
                           ])
 def test_robot_movement_on_normal_belts(input_coordinates, output_coordinates):
+    """
+    Test movement of robots on all normal conveyor belts - 6 types of tiles.
+    """
     robot = Robot(Direction.N, None, None, input_coordinates)
     board = get_board("maps/test_belts.json")
     state = State(board, [robot], (12, 12))
@@ -371,6 +374,9 @@ def test_robot_movement_on_normal_belts(input_coordinates, output_coordinates):
                          ((10, 7), (10, 6)),
                           ])
 def test_robot_movement_on_express_belts(input_coordinates, output_coordinates):
+    """
+    Test movement of robots on express conveyor belts - 6 types of tiles.
+    """
     robot = Robot(Direction.N, None, None, input_coordinates)
     board = get_board("maps/test_belts.json")
     state = State(board, [robot], (12, 12))
@@ -387,6 +393,11 @@ def test_robot_movement_on_express_belts(input_coordinates, output_coordinates):
                          ((6, 4), (7, 4)),
                           ])
 def test_robot_movement_on_all_belts(input_coordinates, output_coordinates):
+    """
+    Test movement of robots on all conveyor belts expect for crossroads.
+    Belts are connected together to test movement of express belts followed up
+    by movement of all belts (according to game rules).
+    """
     robot = Robot(Direction.N, None, None, input_coordinates)
     board = get_board("maps/test_belts.json")
     state = State(board, [robot], (12, 12))
@@ -409,6 +420,9 @@ def test_robot_movement_on_all_belts(input_coordinates, output_coordinates):
                          ((7, 1), (6, 0)),
                           ])
 def test_robot_movement_on_crossroad_belts(input_coordinates, output_coordinates):
+    """
+    Test movement of robots on crossroads from different directions.
+    """
     robot = Robot(Direction.N, None, None, input_coordinates)
     board = get_board("maps/test_belts.json")
     state = State(board, [robot], (12, 12))
@@ -435,6 +449,10 @@ def test_robot_movement_on_crossroad_belts(input_coordinates, output_coordinates
                          ((7, 1), Direction.W),
                           ])
 def test_change_of_robots_direction_on_rotating_belts(input_coordinates, output_direction):
+    """
+    Test change of robot's direction after he is moved by conveyor belt to
+    rotating conveyor belt.
+    """
     robot = Robot(Direction.N, None, None, input_coordinates)
     board = get_board("maps/test_belts.json")
     state = State(board, [robot], (12, 12))
@@ -449,6 +467,10 @@ def test_change_of_robots_direction_on_rotating_belts(input_coordinates, output_
                          ((7, 9), Direction.W),
                           ])
 def test_robots_dont_change_direction_on_rotating_belts_after_move_card(input_coordinates, input_direction):
+    """
+    Test robot's direction isn't changed after he is moved by card to
+    rotating conveyor belt.
+    """
     robot = Robot(input_direction, None, None, input_coordinates)
     robot.program = [MovementCard(100, 1)]
     board = get_board("maps/test_belts.json")
