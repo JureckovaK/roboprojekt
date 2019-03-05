@@ -259,19 +259,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":0
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":1
+                         "name":"express",
+                         "type":"bool",
+                         "value":false
                         }],
                  "type":"belt"
                 },
@@ -282,19 +277,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":3
+                         "value":-90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":1
+                         "name":"express",
+                         "type":"bool",
+                         "value":false
                         }],
                  "type":"belt"
                 },
@@ -305,19 +295,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":1
+                         "value":90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":1
+                         "name":"express",
+                         "type":"bool",
+                         "value":false
                         }],
                  "type":"belt"
                 },
@@ -328,19 +313,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":3
+                         "value":-90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":1
+                         "name":"express",
+                         "type":"bool",
+                         "value":false
                         }],
                  "type":"belt"
                 },
@@ -351,19 +331,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":1
+                         "value":90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":1
+                         "name":"express",
+                         "type":"bool",
+                         "value":false
                         }],
                  "type":"belt"
                 },
@@ -374,19 +349,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":2
+                         "value":180
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":1
+                         "name":"express",
+                         "type":"bool",
+                         "value":false
                         }],
                  "type":"belt"
                 },
@@ -397,19 +367,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
                          "value":0
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":2
+                         "name":"express",
+                         "type":"bool",
+                         "value":true
                         }],
                  "type":"belt"
                 },
@@ -420,19 +385,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":1
+                         "value":90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":2
+                         "name":"express",
+                         "type":"bool",
+                         "value":true
                         }],
                  "type":"belt"
                 },
@@ -443,19 +403,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":false
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":3
+                         "value":-90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":2
+                         "name":"express",
+                         "type":"bool",
+                         "value":true
                         }],
                  "type":"belt"
                 },
@@ -466,19 +421,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":3
+                         "value":-90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":2
+                         "name":"express",
+                         "type":"bool",
+                         "value":true
                         }],
                  "type":"belt"
                 },
@@ -489,19 +439,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":1
+                         "value":90
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":2
+                         "name":"express",
+                         "type":"bool",
+                         "value":true
                         }],
                  "type":"belt"
                 },
@@ -512,19 +457,14 @@
                  "imagewidth":64,
                  "properties":[
                         {
-                         "name":"crossroads",
-                         "type":"bool",
-                         "value":true
-                        },
-                        {
                          "name":"direction",
                          "type":"int",
-                         "value":2
+                         "value":180
                         },
                         {
-                         "name":"move",
-                         "type":"int",
-                         "value":2
+                         "name":"express",
+                         "type":"bool",
+                         "value":true
                         }],
                  "type":"belt"
                 },
