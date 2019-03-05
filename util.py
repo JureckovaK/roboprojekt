@@ -16,13 +16,15 @@ class Direction(Enum):
         Get attributes value and vector of the given Direction class values.
 
         Override standard enum __new__ method.
-        vector: new coordinates (where the robot goes to)
+        coor_delta: new coordinates (where the robot goes to)
         tile_property: map tile property: value (custom - added in Tiled).
-        Makes it possible to change vector and tile_property when the object is rotated.
-        With degrees change (value) there comes the coordinates (vector) change and tile_property.
+        Makes it possible to change delta and tile_property
+        when the object is rotated.
 
-        More info about enum - official documentation: https://docs.python.org/3/library/enum.html
-        Blog post with the exact __new__() usage: http://xion.io/post/code/python-enums-are-ok.html
+        More info about enum - official documentation:
+        https://docs.python.org/3/library/enum.html
+        Blog post with the exact __new__() usage:
+        http://xion.io/post/code/python-enums-are-ok.html
         """
         obj = object.__new__(cls)
         obj._value_ = degrees
@@ -36,7 +38,8 @@ class Direction(Enum):
     def get_new_direction(self, where_to):
         """
         Get new direction of given object.
-        Change attribute direction according to argument where_to, passed from class Rotation.
+        Change attribute direction according to argument where_to,
+        passed from class Rotation.
         """
         return Direction(self + where_to)
 
@@ -116,10 +119,7 @@ class Tile:
 
     def push_robot(self, robot, state):
         """
-        Move robot by one tile in specific game round.
-
-        robot: Robot class
-        state: State class containing game round
+        Move robot by one tile during a specific register phase.
 
         Return Robot class.
         """
@@ -238,15 +238,15 @@ class BeltTile(Tile):
 
 class PusherTile(Tile):
     def __init__(self, direction, path, properties):
-        self.game_round = properties[0]["value"]
+        self.register = properties[0]["value"]
         super().__init__(direction, path, properties)
 
     def push_robot(self, robot, state):
-        # Check game round and activate correct pushers.
-        # PusherTile property game_round:
-        #  0 for even game round number,
-        #  1 for odd game round number.
-        if state.game_round % 2 == self.game_round:
+        # Check register and activate correct pushers.
+        # PusherTile property register:
+        #  0 for even register number,
+        #  1 for odd register number.
+        if state.register % 2 == self.register:
             robot.move(self.direction.get_new_direction(Rotation.U_TURN), 1, state)
 
 
@@ -310,14 +310,7 @@ class LaserTile(Tile):
                     # Don't check new tiles.
                     break
         if hit:
-            # No robots found in the direction of incoming laser.
-            # So do damage to robot.
-            if robot.damages < (10 - self.laser_strength):
-                # Laser won't kill robot, but it will damage robot.
-                robot.damages += self.laser_strength
-            else:
-                # Robot is damaged so much that laser kills him.
-                robot.die()
+            robot.be_damaged(self.laser_strength)
 
 
 class FlagTile(Tile):
@@ -341,7 +334,7 @@ class RepairTile(Tile):
         super().__init__(direction, path, properties)
 
     def repair_robot(self, robot, state):
-        if state.game_round == 5:
+        if state.register == 5:
             # Remove one robot damage.
             if robot.damages > 0:
                 robot.damages -= 1
