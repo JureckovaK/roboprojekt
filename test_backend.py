@@ -346,6 +346,118 @@ def test_robot_is_pushed_out_of_the_board(tile):
     assert robot.coordinates == (-1, -1)
 
 
+@pytest.mark.parametrize(("input_coordinates", "output_coordinates"),
+                         [((3, 10), (3, 11)),
+                         ((2, 10), (2, 11)),
+                         ((2, 9), (2, 8)),
+                         ((2, 7), (2, 8)),
+                         ((4, 7), (4, 6)),
+                         ((6, 7), (6, 6)),
+                          ])
+def test_robot_movement_on_normal_belts(input_coordinates, output_coordinates):
+    robot = Robot(Direction.N, None, None, input_coordinates)
+    board = get_board("maps/test_belts.json")
+    state = State(board, [robot], (12, 12))
+    apply_tile_effects(state)
+    assert robot.coordinates == output_coordinates
+
+
+@pytest.mark.parametrize(("input_coordinates", "output_coordinates"),
+                         [((5, 9), (5, 10)),
+                         ((6, 9), (7, 9)),
+                         ((8, 9), (7, 9)),
+                         ((10, 9), (9, 9)),
+                         ((9, 8), (10, 8)),
+                         ((10, 7), (10, 6)),
+                          ])
+def test_robot_movement_on_express_belts(input_coordinates, output_coordinates):
+    robot = Robot(Direction.N, None, None, input_coordinates)
+    board = get_board("maps/test_belts.json")
+    state = State(board, [robot], (12, 12))
+    apply_tile_effects(state)
+    assert robot.coordinates == output_coordinates
+
+
+@pytest.mark.parametrize(("input_coordinates", "output_coordinates"),
+                         [((1, 10), (2, 11)),
+                         ((1, 9), (2, 8)),
+                         ((1, 4), (2, 5)),
+                         ((1, 3), (2, 2)),
+                         ((4, 4), (5, 4)),
+                         ((6, 4), (7, 4)),
+                          ])
+def test_robot_movement_on_all_belts(input_coordinates, output_coordinates):
+    robot = Robot(Direction.N, None, None, input_coordinates)
+    board = get_board("maps/test_belts.json")
+    state = State(board, [robot], (12, 12))
+    apply_tile_effects(state)
+    assert robot.coordinates == output_coordinates
+
+
+@pytest.mark.parametrize(("input_coordinates", "output_coordinates"),
+                         [((1, 7), (2, 8)),
+                         ((2, 6), (2, 8)),
+                         ((3, 7), (4, 6)),
+                         ((4, 8), (4, 6)),
+                         ((5, 7), (6, 6)),
+                         ((7, 7), (6, 6)),
+                         ((1, 1), (2, 2)),
+                         ((2, 0), (2, 2)),
+                         ((3, 1), (4, 0)),
+                         ((4, 2), (4, 0)),
+                         ((5, 1), (6, 0)),
+                         ((7, 1), (6, 0)),
+                          ])
+def test_robot_movement_on_crossroad_belts(input_coordinates, output_coordinates):
+    robot = Robot(Direction.N, None, None, input_coordinates)
+    board = get_board("maps/test_belts.json")
+    state = State(board, [robot], (12, 12))
+    apply_tile_effects(state)
+    assert robot.coordinates == output_coordinates
+
+
+@pytest.mark.parametrize(("input_coordinates", "output_direction"),
+                         [((1, 10), Direction.W),
+                         ((1, 9), Direction.E),
+                         ((1, 4), Direction.W),
+                         ((1, 3), Direction.E),
+                         ((1, 7), Direction.W),
+                         ((2, 6), Direction.N),
+                         ((3, 7), Direction.E),
+                         ((4, 8), Direction.N),
+                         ((5, 7), Direction.E),
+                         ((7, 7), Direction.W),
+                         ((1, 1), Direction.W),
+                         ((2, 0), Direction.N),
+                         ((3, 1), Direction.E),
+                         ((4, 2), Direction.N),
+                         ((5, 1), Direction.E),
+                         ((7, 1), Direction.W),
+                          ])
+def test_change_of_robots_direction_on_rotating_belts(input_coordinates, output_direction):
+    robot = Robot(Direction.N, None, None, input_coordinates)
+    board = get_board("maps/test_belts.json")
+    state = State(board, [robot], (12, 12))
+    apply_tile_effects(state)
+    assert robot.direction == output_direction
+
+
+@pytest.mark.parametrize(("input_coordinates", "input_direction"),
+                         [((6, 8), Direction.N),
+                         ((5, 9), Direction.E),
+                         ((6, 10), Direction.S),
+                         ((7, 9), Direction.W),
+                          ])
+def test_robots_dont_change_direction_on_rotating_belts_after_move_card(input_coordinates, input_direction):
+    robot = Robot(input_direction, None, None, input_coordinates)
+    robot.program = [MovementCard(100, 1)]
+    board = get_board("maps/test_belts.json")
+    state = State(board, [robot], (12, 12))
+    robot.apply_card_effect(state)
+    apply_tile_effects(state)
+    assert robot.direction == input_direction
+
+
 @pytest.mark.parametrize(("direction", "card", "new_coordinates"),
                          [(Direction.E, MovementCard(100, 1), (5, 7)),
                          (Direction.E, MovementCard(100, 2), (6, 7)),
@@ -355,7 +467,8 @@ def test_robot_is_pushed_out_of_the_board(tile):
                          (Direction.S, MovementCard(100, 2), (4, 5)),
                          (Direction.S, MovementCard(100, 3), (4, 4)),
                          (Direction.S, MovementCard(100, -1), (4, 8)),
-                         (Direction.N, MovementCard(100, -1), (4, 6)), (Direction.W, MovementCard(100, -1), (5, 7)),
+                         (Direction.N, MovementCard(100, -1), (4, 6)),
+                         (Direction.W, MovementCard(100, -1), (5, 7)),
                           ])
 def test_move_cards(direction, card, new_coordinates):
     """
