@@ -547,6 +547,27 @@ def test_robots_dont_change_direction_on_rotating_belts_after_move_card(input_co
     assert robot.direction == input_direction
 
 
+@pytest.mark.parametrize(("input_coordinates_1", "input_coordinates_2", "output_coordinates_1", "output_coordinates_2"),
+                         [((1, 10), (2, 10), (2, 10), (2, 11)),
+                         ((6, 4), (7, 4), (7, 4), (7, 5)),
+                         ((2, 5), (2, 4), (2, 5), (2, 4)),
+                         ((5, 7), (7, 7), (6, 6), (6, 7)),
+                         ((2, 1), (2, 0), (2, 2), (2, 1)),
+                          ])
+def test_two_robots_movements_on_belts(input_coordinates_1, input_coordinates_2, output_coordinates_1, output_coordinates_2):
+    """
+    Test movement of two robots in a row on belts. Robots have to moved
+    in certain order to perform the belt movements right.
+    """
+    robots = [Robot(Direction.N, None, None, input_coordinates_1),
+              Robot(Direction.N, None, None, input_coordinates_2)]
+    board = get_board("maps/test_belts.json")
+    state = State(board, robots, (12, 12))
+    apply_tile_effects(state)
+    assert robots[0].coordinates == output_coordinates_1
+    assert robots[1].coordinates == output_coordinates_2
+
+
 @pytest.mark.parametrize(("direction", "card", "new_coordinates"),
                          [(Direction.E, MovementCard(100, 1), (5, 7)),
                          (Direction.E, MovementCard(100, 2), (6, 7)),
