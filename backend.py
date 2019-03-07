@@ -412,12 +412,9 @@ def check_robot_in_the_way(state, coordinates):
     return None
 
 
-
 def move_belts(state):
     """
     Move robots on conveyor belts.
-
-    state: State class
     """
     # According to rules:
     # First, express belts move robots by one tile (express attribute is set to True).
@@ -451,7 +448,6 @@ def get_robots_on_belts(state, express_belts):
     """
     Get all robots on conveyor belts according to the type of belt.
 
-    state: State object containg game board, robots and size of game board
     express_belts: a boolean, True - for express belts, False - for all belts.
 
     Return a dictionary of coordinates as keys and a tuple of robot and its tile as values.

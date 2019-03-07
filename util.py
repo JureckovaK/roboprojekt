@@ -112,7 +112,6 @@ class Tile:
         Rotate robot on rotating conveyor belts. If robot will be rotated,
         is decided by the direction he entered a tile.
 
-        robot: Robot class
         direction: direction from which robot entered a tile
         """
         return robot

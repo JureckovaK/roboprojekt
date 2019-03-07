@@ -423,7 +423,7 @@ def test_robot_is_pushed_out_of_the_board(tile):
                           ])
 def test_robot_movement_on_normal_belts(input_coordinates, output_coordinates):
     """
-    Test movement of robots on all normal conveyor belts - 6 types of tiles.
+    Test movement of robots on normal conveyor belts - 6 types of tiles.
     """
     robot = Robot(Direction.N, None, None, input_coordinates)
     board = get_board("maps/test_belts.json")
@@ -459,7 +459,7 @@ def test_robot_movement_on_express_belts(input_coordinates, output_coordinates):
                          ((4, 4), (5, 4)),
                          ((6, 4), (7, 4)),
                           ])
-def test_robot_movement_on_all_belts(input_coordinates, output_coordinates):
+def test_robot_movement_on_connected_belts(input_coordinates, output_coordinates):
     """
     Test movement of robots on all conveyor belts expect for crossroads.
     Belts are connected together to test movement of express belts followed up
