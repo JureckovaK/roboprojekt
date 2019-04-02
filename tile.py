@@ -127,23 +127,9 @@ class HoleTile(Tile):
 
 class BeltTile(Tile):
     def __init__(self, direction, path, properties):
-        self.direction_out = self.transform_direction(properties[0]["value"])
+        self.direction_out = transform_direction(properties[0]["value"])
         self.express = properties[1]["value"]
         super().__init__(direction, path, properties)
-
-    def transform_direction(self, direction_integer):
-        """
-        Method to transform the integer taken from json properties
-        to valid Direction or Rotation class instance for later processing.
-        """
-        if direction_integer == 0:
-            return Direction.N
-        if direction_integer == 90:
-            return Rotation.RIGHT
-        if direction_integer == -90:
-            return Rotation.LEFT
-        if direction_integer == 180:
-            return Rotation.U_TURN
 
     def check_belts(self, express_belts):
         # Only express belts
@@ -286,7 +272,11 @@ def transform_direction(direction_int):
     Function to transform the string taken from json properties to valid
     Rotation class instance for later processing.
     """
+    if direction_int == 0:
+        return Direction.N
     if direction_int == -1:
         return Rotation.LEFT
     if direction_int == 1:
         return Rotation.RIGHT
+    if direction_int == 2:
+        return Rotation.U_TURN
