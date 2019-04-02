@@ -4,6 +4,7 @@ Tile contains class Tile and its subclasses.
 
 from util import Direction, Rotation, get_next_coordinates
 
+
 class Tile:
     def __init__(self, direction, path, properties):
         self.direction = direction
@@ -38,59 +39,59 @@ class Tile:
 
     def kill_robot(self, robot):
         """
-        Take away one robot life, set him to inactive mode and move him
-        to coordinates for inactive robots (None).
-
-        Take and return Robot class.
+        Take away one robot life, set him to inactive mode
+        and set his coordinates to None.
         """
         return robot
 
-    def move_robot(self, robot, state):
+    def check_belts(self, express_belts):
+        """
+        Check that current tile is conveyor belt of desired type.
+        express_belts: a boolean, True for express belts, False for all belts.
+        Return a boolean.
+        True - Tile is conveyor belt of desired type.
+        False - Tile isn't conveyor belt or it's a wrong type of belt.
+        """
+        return False
+
+    def rotate_robot_on_belt(self, robot, direction):
+        """
+        Rotate robot on rotating conveyor belts. If robot will be rotated,
+        is decided by the direction he entered a tile.
+        direction: direction from which robot entered a tile
+        """
         return robot
 
     def push_robot(self, robot, state):
         """
         Move robot by one tile during a specific register phase.
-
-        Return Robot class.
         """
         return robot
 
     def rotate_robot(self, robot):
         """
         Rotate robot by 90° to the left or right according to tile properties.
-
-        Take and return Robot class.
         """
         return robot
 
     def shoot_robot(self, robot, state):
         """
-        Shoot robot with tile laser.
-
-        robot: Robot class
-        state: State class
-
-        Return Robot class.
+        Shoot robot with tile laser. Number of robot's damages is raised by
+        the strength of laser. If the new number of damages is greater than 9,
+        robot is killed.
         """
         return robot
 
     def collect_flag(self, robot):
         """
         Collect flag by robot and change robot's start coordinates.
-
-        Take and return Robot class.
         """
         return robot
 
     def repair_robot(self, robot, state):
         """
-        Repair one robot's damage. Change robot's start coordinates, if possible by tile properties.
-
-        robot: Robot class
-        state: State class
-
-        Return Robot class.
+        Repair one robot's damage. Change robot's start coordinates,
+        if possible by tile properties.
         """
         return robot
 
@@ -115,7 +116,6 @@ class StartTile(Tile):
         super().__init__(direction, path, properties)
 
 
-
 class HoleTile(Tile):
     def __init__(self, direction=Direction.N, path=None, properties=[]):
         super().__init__(direction, path, properties)
@@ -127,17 +127,47 @@ class HoleTile(Tile):
 
 class BeltTile(Tile):
     def __init__(self, direction, path, properties):
-        self.crossroads = properties[0]["value"]
-        self.belt_direction = properties[1]["value"]
-        self.move_count = properties[2]["value"]
+        self.direction_out = self.transform_direction(properties[0]["value"])
+        self.express = properties[1]["value"]
         super().__init__(direction, path, properties)
 
-    def move_robot(self, state):
-        # TO DO!
+    def transform_direction(self, direction_integer):
+        """
+        Method to transform the integer taken from json properties
+        to valid Direction or Rotation class instance for later processing.
+        """
+        if direction_integer == 0:
+            return Direction.N
+        if direction_integer == 90:
+            return Rotation.RIGHT
+        if direction_integer == -90:
+            return Rotation.LEFT
+        if direction_integer == 180:
+            return Rotation.U_TURN
 
-        # 1) Express belts move 1 space
-        # 2) Express belts and normal belts move 1 space
-        pass
+    def check_belts(self, express_belts):
+        # Only express belts
+        if self.express is express_belts:
+            return True
+        # All belts
+        elif express_belts is False:
+            return True
+        else:
+            return False
+
+    def rotate_robot_on_belt(self, robot, direction):
+        # Special condition for one type of crossroads:
+        # If crossroads have Direction.N, then the special type has exit
+        # on south part of tile.
+        if self.direction_out == Rotation.U_TURN:
+            if self.direction.get_new_direction(Rotation.RIGHT) == direction:
+                robot.rotate(Rotation.RIGHT)
+            else:
+                robot.rotate(Rotation.LEFT)
+        # All other rotating belts or crossroads.
+        elif isinstance(self.direction_out, Rotation):
+                if direction == self.direction:
+                    robot.rotate(self.direction_out)
 
 
 class PusherTile(Tile):
@@ -162,6 +192,7 @@ class GearTile(Tile):
     def rotate_robot(self, robot):
         # Rotate robot by 90° according to GearTile property: left or right.
         robot.rotate(self.move_direction)
+
 
 class LaserTile(Tile):
     def __init__(self, direction, path, properties):
@@ -252,7 +283,8 @@ def create_tile_subclass(direction, path, type, properties):
 
 def transform_direction(direction_int):
     """
-    Function to transform the string taken from json properties to valid Rotation class instance for later processing.
+    Function to transform the string taken from json properties to valid
+    Rotation class instance for later processing.
     """
     if direction_int == -1:
         return Rotation.LEFT
