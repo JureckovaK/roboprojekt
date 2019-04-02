@@ -1,18 +1,10 @@
-from backend import get_starting_coordinates, get_robot_paths, create_robots, get_start_state, Robot, State, MovementCard, RotationCard, apply_tile_effects
-from util import Tile, HoleTile, GearTile, PusherTile, RepairTile, FlagTile, Direction, Rotation
-from loading import get_board
-from pathlib import Path
 import pytest
+from pathlib import Path
 
-
-def test_starting_coordinates():
-    """
-    Take board (based on JSON test_3 map) and assert correct starting coordinates are returned.
-    If the test_3.json map is changed or removed, the test needs to be updated.
-    """
-    board = get_board("maps/test_3.json")
-    assert len(get_starting_coordinates(board)) == 8
-    assert isinstance(get_starting_coordinates(board), list)
+from backend import get_robot_paths, create_robots, get_start_state, Robot, State, MovementCard, RotationCard, apply_tile_effects
+from util import Direction, Rotation
+from tile import Tile, HoleTile, GearTile, PusherTile, RepairTile, FlagTile
+from loading import get_board
 
 
 def test_robot_paths():
@@ -26,7 +18,7 @@ def test_robot_paths():
     assert isinstance(path, Path)
 
 
-def test_robots_on_starting_coordinates():
+def test_robots_on_start_coordinates():
     """
     Assert that the result of create_robots is a list which contains
     Robot objects with correct attribute coordinates.
@@ -37,9 +29,9 @@ def test_robots_on_starting_coordinates():
     assert isinstance(robots[0], Robot)
 
 
-def test_starting_state():
+def test_start_state():
     """
-    Assert that created starting state (board and robots) contains
+    Assert that created start state (board and robots) contains
     the correct instances of objects.
     """
     ss = get_start_state("maps/test_3.json")
@@ -210,8 +202,8 @@ def test_robot_is_not_repaired(damages, tile, current_register):
                           ])
 def test_robot_changed_start_coordinates(tile, coordinates_after):
     """
-    When robot is on RepairTile with special property, he changes his starting coordinates to the tile coordinates.
-    On a normal RepairTile he doesn't change the starting tile.
+    When robot is on RepairTile with special property, he changes his start coordinates to the tile coordinates.
+    On a normal RepairTile he doesn't change the start tile.
     """
     robot = Robot(Direction.N, None, None, (0, 0))
     state = State({(0, 0): [tile]}, [robot], (1, 1))
@@ -223,10 +215,10 @@ def test_robot_changed_start_coordinates(tile, coordinates_after):
 # GearTile
 
 @pytest.mark.parametrize(("direction_before", "tile", "direction_after"),
-                         [(Direction.E, GearTile(None, None, [{'value': "left"}]),  Direction.N),
-                         (Direction.E, GearTile(None, None, [{'value': "right"}]), Direction.S),
-                         (Direction.S, GearTile(None, None, [{'value': "left"}]), Direction.E),
-                         (Direction.S, GearTile(None, None, [{'value': "right"}]), Direction.W),
+                         [(Direction.E, GearTile(None, None, [{'value': -1}]),  Direction.N),
+                         (Direction.E, GearTile(None, None, [{'value': 1}]), Direction.S),
+                         (Direction.S, GearTile(None, None, [{'value': -1}]), Direction.E),
+                         (Direction.S, GearTile(None, None, [{'value': 1}]), Direction.W),
                           ])
 def test_robot_changed_direction(direction_before, tile, direction_after):
     """
@@ -251,7 +243,7 @@ def test_robot_died(lives_before, lives_after):
     When robot comes to a HoleTile (or goes / is pushed out of the game board),
     he gets killed.
     Check that his lives were lowered, he got inactive till the next game round
-    and his coordinates changed to the (-1, -1).
+    and his coordinates changed to the None.
     """
     robot = Robot(Direction.N, None, None, (0, 0))
     state = State({(0, 1): [HoleTile(None, None, None)]}, [robot], (1, 2))
@@ -288,7 +280,7 @@ def test_robot_collected_flags(flags_before, tile, flags_after):
                           ])
 def test_robot_changed_coordinates(tile):
     """
-    When a robot stands on FlagTile the starting coordinates change to the tile's coordinates.
+    When a robot stands on FlagTile the start coordinates change to the tile's coordinates.
     """
     robot = Robot(Direction.N, None, None, (0, 0))
     state = State({(0, 0): [tile]}, [robot], (1, 1))
@@ -410,7 +402,38 @@ def test_robot_is_pushed_out_of_the_board(tile):
     apply_tile_effects(state)
     assert robot.lives == 2
     assert robot.inactive is True
-    assert robot.coordinates == None
+    assert robot.coordinates is None
+
+
+def test_robot_on_start_has_the_correct_direction():
+    """
+    When robot is created, his direction shoud be the same as the direction
+    of start tile he stands on.
+    Assert the direction is correcly initiated.
+    """
+    state = get_start_state("maps/test_start_direction.json")
+    for robot in state.robots:
+        tile_direction = state.get_tiles(robot.coordinates)[0].direction
+        assert robot.direction == tile_direction
+
+
+@pytest.mark.parametrize(("robot_index", "expected_coordinates"),
+                         [(0, (0, 0)),
+                          (1, (1, 0)),
+                          (2, (2, 0)),
+                          (3, (3, 0)),
+                          ])
+def test_robots_order_on_start(robot_index, expected_coordinates):
+    """
+    The order of robots list should reflect their starting positions.
+    First robot from the list stands on first start tile and so on.
+    Assert the list is correcly created.
+    Test to check the behaviour in Python 3.5.
+    """
+    state = get_start_state("maps/test_start_direction.json")
+    current_robot = state.robots[robot_index]
+    assert current_robot.coordinates == expected_coordinates
+
 
 
 @pytest.mark.parametrize(("input_coordinates", "output_coordinates"),

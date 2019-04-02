@@ -1,8 +1,10 @@
 """
 Loading module contains functions to load map file exported to json format from Tiled 1.2.
 """
-from util import Direction, select_tile
 import json
+
+from util import Direction
+from tile import create_tile_subclass
 
 
 def get_data(map_name):
@@ -42,7 +44,7 @@ def get_data_properties(data):
     and return a tuple: tile types dict, tile's custom properties dict
     and paths to images dict.
     """
-    no_properties_tiles = {'ground', 'hole', 'wall', 'starting_square'}
+    no_properties_tiles = {'ground', 'hole', 'wall'}
     types = {}
     properties = {}
     paths = {}
@@ -122,7 +124,7 @@ def get_board(map_name):
             # otherwise add Tile object to the list of objects on the same coordinates
             if id != 0:
                 direction = get_tile_direction(tile_number)
-                tile = select_tile(direction, paths[id], types[id], properties[id])
+                tile = create_tile_subclass(direction, paths[id], types[id], properties[id])
                 tiles.append(tile)
                 board[coordinate] = tiles
     return board

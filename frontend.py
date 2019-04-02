@@ -11,14 +11,14 @@ TILE_WIDTH = 64
 TILE_HEIGHT = 64
 
 
-def init_window(state):
+def create_window(state):
     """
     Return a pyglet window for graphic output.
 
     state: State object containing game board, robots and map sizes
     """
-    window = pyglet.window.Window(state.sizes[0] * TILE_WIDTH,
-                                  state.sizes[1] * TILE_HEIGHT, resizable=True)
+    window = pyglet.window.Window(state.tile_count[0] * TILE_WIDTH,
+                                  state.tile_count[1] * TILE_HEIGHT, resizable=True)
     return window
 
 
@@ -42,11 +42,10 @@ def load_robots(state):
     state: State object containing game board and robots
     """
     robot_sprites = []
-    for robot in state.robots:
-        # Only alive and active robots will be drawn.
-        if robot.lives > 0 or not robot.inactive:
-            robot_sprite = create_sprites(robot.coordinates, [robot])
-            robot_sprites.extend(robot_sprite)
+    # Only active robots will be drawn.
+    for robot in state.get_active_robots():
+        robot_sprite = create_sprites(robot.coordinates, [robot])
+        robot_sprites.extend(robot_sprite)
     return robot_sprites
 
 
@@ -74,7 +73,7 @@ def create_sprites(coordinate, items):
     return items_sprites
 
 
-def draw_board(state, window):
+def draw_state(state, window):
     """
     Draw the images of tiles and robots into map, react to user's resizing of window by scaling the board.
 
@@ -89,8 +88,8 @@ def draw_board(state, window):
 
     #scaling ratio
     zoom = min(
-        window.height / (state.sizes[1] * TILE_HEIGHT),
-        window.width / (state.sizes[0] * TILE_WIDTH)
+        window.height / (state.tile_count[1] * TILE_HEIGHT),
+        window.width / (state.tile_count[0] * TILE_WIDTH)
     )
 
     pyglet.gl.glScalef(zoom, zoom, 1)
