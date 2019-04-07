@@ -112,7 +112,7 @@ class WallTile(Tile):
 class StartTile(Tile):
     # Start tile has no tile effect.
     def __init__(self, direction, path, properties):
-        self.number = properties[0]["value"]
+        self.number = properties["number"]
         super().__init__(direction, path, properties)
 
 
@@ -127,8 +127,8 @@ class HoleTile(Tile):
 
 class BeltTile(Tile):
     def __init__(self, direction, path, properties):
-        self.direction_out = transform_direction(properties[0]["value"])
-        self.express = properties[1]["value"]
+        self.direction_out = transform_direction(properties["direction_out"])
+        self.express = properties["express"]
         super().__init__(direction, path, properties)
 
     def check_belts(self, express_belts):
@@ -158,7 +158,7 @@ class BeltTile(Tile):
 
 class PusherTile(Tile):
     def __init__(self, direction, path, properties):
-        self.register = properties[0]["value"]
+        self.register = properties["register"]
         super().__init__(direction, path, properties)
 
     def push_robot(self, robot, state):
@@ -172,7 +172,7 @@ class PusherTile(Tile):
 
 class GearTile(Tile):
     def __init__(self, direction, path, properties):
-        self.move_direction = transform_direction(properties[0]["value"])
+        self.move_direction = transform_direction(properties["move_direction"])
         super().__init__(direction, path, properties)
 
     def rotate_robot(self, robot):
@@ -182,13 +182,12 @@ class GearTile(Tile):
 
 class LaserTile(Tile):
     def __init__(self, direction, path, properties):
-        self.laser_strength = properties[0]["value"]
-        self.laser_start = properties[1]["value"]
+        self.laser_strength = properties["laser_strength"]
+        self.laser_start = properties["laser_start"]
         super().__init__(direction, path, properties)
 
     def shoot_robot(self, robot, state):
         # Robot stands on laser tile.
-        hit = True
         # If robot isn't standing on the start of the laser, look for other robots.
         if not self.laser_start:
             # Get coordinates of current robot.
@@ -200,15 +199,14 @@ class LaserTile(Tile):
             # Get direction in which it will be checked for other robots or laser start.
             direction_to_start = self.direction.get_new_direction(Rotation.U_TURN)
             # Check if there is another robot in direction of incoming laser.
-            while hit:
+            while True:
                 # Get new coordinates.
                 (x, y) = get_next_coordinates((x, y), direction_to_start)
                 # Check for other robots.
                 if (x, y) in coordinates:
                     # There is another robot.
                     # Current robot won't be hit by laser.
-                    hit = False
-                    break
+                    return
                 # Get new tiles.
                 new_tiles = state.get_tiles((x, y))
                 for tile in new_tiles:
@@ -220,13 +218,12 @@ class LaserTile(Tile):
                 if isinstance(tile, LaserTile) and tile.laser_start:
                     # Don't check new tiles.
                     break
-        if hit:
-            robot.be_damaged(self.laser_strength)
+        robot.be_damaged(self.laser_strength)
 
 
 class FlagTile(Tile):
     def __init__(self, direction, path, properties):
-        self.flag_number = properties[0]["value"]
+        self.flag_number = properties["flag_number"]
         super().__init__(direction, path, properties)
 
     def collect_flag(self, robot):
@@ -241,7 +238,7 @@ class FlagTile(Tile):
 
 class RepairTile(Tile):
     def __init__(self, direction, path, properties):
-        self.new_start = properties[0]["value"]
+        self.new_start = properties["new_start"]
         super().__init__(direction, path, properties)
 
     def repair_robot(self, robot, state):

@@ -66,14 +66,14 @@ class Robot:
                 # There is no wall. Get next coordinates.
                 next_coordinates = get_next_coordinates(self.coordinates, direction)
                 # Check robots on the next tile before moving.
-                robot_in_the_way_index = check_robot_in_the_way(state, next_coordinates)
+                robot_in_the_way = check_robot_in_the_way(state, next_coordinates)
 
                 # Move robot in the way.
-                if robot_in_the_way_index is not None:
+                if robot_in_the_way:
                     if push_others:
-                        state.robots[robot_in_the_way_index].walk(1, state, direction)
+                        robot_in_the_way.walk(1, state, direction)
                         # Check that robot moved.
-                        if state.robots[robot_in_the_way_index].coordinates == next_coordinates:
+                        if robot_in_the_way.coordinates == next_coordinates:
                             break
                     else:
                         break
@@ -155,11 +155,11 @@ class Robot:
                 # Check if there is a robot on the next coordinates.
                 # Skip this if the shooting robot's current coordinates are checked
                 if next_coordinates != self.coordinates:
-                    robot_in_the_way_index = check_robot_in_the_way(state, next_coordinates)
+                    robot_in_the_way = check_robot_in_the_way(state, next_coordinates)
 
                     # There is a robot, shoot him and break the cycle (only one gets shot).
-                    if robot_in_the_way_index is not None:
-                        state.robots[robot_in_the_way_index].be_damaged()
+                    if robot_in_the_way:
+                        robot_in_the_way.be_damaged()
                         break
 
                 # Check if there is a wall, if is: end of shot.
@@ -422,8 +422,8 @@ def check_robot_in_the_way(state, coordinates):
     # Check robots on the next tile.
     for robot in state.robots:
         if robot.coordinates == coordinates:
-            # Return index of robot that is in the way.
-            return state.robots.index(robot)
+            # Return robot that is in the way.
+            return robot
 
     # There are no robots, return None
     return None
