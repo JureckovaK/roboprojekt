@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 from util import Direction, Rotation, get_next_coordinates
 from tile import HoleTile
-from loading import get_board
+from loading import get_board, get_map_data
 
 MAX_DAMAGE_VALUE = 10
 
@@ -40,6 +40,9 @@ class Robot:
             self.damages, self.inactive)
 
     def as_dict(self):
+        """
+        Return robot´s info as dictionary for sending with server.
+        """
         return {"name": self.name, "coordinates": self.coordinates, "lives": self.lives,
                 "flags": self.flags, "damages": self.damages, "inactive": self.inactive}
 
@@ -111,22 +114,6 @@ class Robot:
         Rotate robot according to a given direction.
         """
         self.direction = self.direction.get_new_direction(where_to)
-
-    def apply_card_effect(self, state):
-        """
-        Get the current card (depending on register) and perform the card effect.
-        If the card's effect is move - it calls robot's method walk,
-        if it is rotation - robot's method rotate.
-        TODO: resolve card's priority
-        """
-        # card on an index of a current register
-        current_card = self.program[state.register - 1]
-
-        if isinstance(current_card, MovementCard):
-            self.walk(current_card.distance, state)
-
-        if isinstance(current_card, RotationCard):
-            self.rotate(current_card.rotation)
 
     def fall_into_hole(self, state):
         """
@@ -225,6 +212,12 @@ class MovementCard(Card):
     def __repr__(self):
         return "<{} {} {}>".format(self.name, self.priority, self.distance)
 
+    def apply_effect(self, robot, state):
+        """
+        Card calls robot's method walk.
+        """
+        robot.walk(self.distance, state)
+
 
 class RotationCard(Card):
     def __init__(self, priority, value):
@@ -243,6 +236,12 @@ class RotationCard(Card):
     def __repr__(self):
         return "<{} {} {}>".format(self.name, self.priority, self.rotation)
 
+    def apply_effect(self, robot, state):
+        """
+        Card calls robot's method rotate.
+        """
+        robot.rotate(self.rotation)
+
 
 class State:
     def __init__(self, board, robots, tile_count):
@@ -254,8 +253,11 @@ class State:
     def __repr__(self):
         return "<State {} {}>".format(self._board, self.robots)
 
-    def as_dict(self):
-        return {"robots": [robot.as_dict() for robot in self.robots]}
+    def as_dict(self, map_name):
+        """
+        Return state as dictionary for sending with server
+        """
+        return {"board": get_map_data(map_name), "robots": [robot.as_dict() for robot in self.robots]}
 
     def get_tiles(self, coordinates):
         """
@@ -272,9 +274,11 @@ class State:
 
     def get_active_robots(self):
         """
-        Return a list of active robots.
+        Yield all active robots.
         """
-        return [robot for robot in self.robots if not robot.inactive]
+        for robot in self.robots:
+            if not robot.inactive:
+                yield robot
 
 
 def get_start_tiles(board):
@@ -282,23 +286,18 @@ def get_start_tiles(board):
     Get start tiles for robots.
 
     board: dictionary returned by get_board().
-    Find the objects which are start tiles (matching attribute path of Tile object),
-    then add create an ordered dictionary of start tile number with values: coordinates
-    and tile_direction.
-    OrderedDict is a structure that ensures the dictionary is stored in the order
-    of the new keys being added.
+    Create an ordered dictionary of all start tiles in the board with start
+    tile number as a key and values: coordinates and tile_direction.
+    OrderedDict is a structure that ensures the dictionary is stored
+    in the order of the new keys being added.
     """
 
     start_tiles = {}
     for coordinate, tiles in board.items():
         for tile in tiles:
-            # range(9) because there may be max. 8 start tiles
-            for i in range(9):
-                if tile.path == ("./img/tiles/png/start_tile0{}.png".format(i)):
-                    start_tiles[i] = {
-                        "coordinates": coordinate,
-                        "tile_direction": tile.direction,
-                    }
+            if tile.properties_dict(coordinate) is not None:
+                start_tiles[tile.number] = tile.properties_dict(coordinate)
+
     # Sort created dictionary by the first element - start tile number
     OrderedDict(sorted(start_tiles.items(), key=lambda stn: stn[0]))
 
