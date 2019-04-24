@@ -429,44 +429,66 @@ def move_belts(state):
     # First, express belts move robots by one tile (express attribute is set to True).
     # Then all belts move robots by one tile (express attribute is set to False).
     for express_belts in [True, False]:
-        # Get robots on belts: robots, their belt tiles and coordinates
-        robots_to_move = get_robots_on_belts(state, express_belts)
-        # Now move all robots
-        while robots_to_move:
-            for coordinate, (robot, tile) in robots_to_move.items():
-                # Get direction in which robot will be moved.
-                direction = tile.direction.get_new_direction(tile.direction_out)
-                # Get next coordinates on which robot will be moved.
-                next_coordinate = get_next_coordinates(coordinate, direction)
-                # Check that there isn't other robot that is also on belt tile.
-                # That robot should be moved first.
-                if next_coordinate not in robots_to_move:
-                    # Now robot is moved by belt.
-                    robot.move(direction, 1, state)
-                    # Check that robot was moved.
-                    if robot.coordinates == next_coordinate:
-                        # Check if the next tile is rotating belt.
-                        for tile in state.get_tiles(robot.coordinates):
-                            tile.rotate_robot_on_belt(robot, direction)
-                    # Delete cooresponding entry in dictionary.
-                    del robots_to_move[coordinate]
-                    break
+        # Get robots next coordinates after move of conveyor belts
+        robots_next_coordinates = get_robots_next_coordinates(state, express_belts)
+        while True:
+            colliding_robots = get_colliding_robots(robots_next_coordinates)
+            if not colliding_robots:
+                break
+            else:
+                # For colliding robots set next coordinates to their current.
+                # They
+                for robot in colliding_robots:
+                    robots_next_coordinates[robot] = robot.coordinates
+        # Add case for robots, who would switch places!!!
+
+        # All collision sorted, move robots to new coordinates
+        for robot in robots_next_coordinates:
+            robot.coordinates = robots_next_coordinates[robot]
 
 
-def get_robots_on_belts(state, express_belts):
+def get_robots_next_coordinates(state, express_belts):
     """
-    Get all robots on conveyor belts according to the type of belt.
+    Get all robot's next coordinates after move of certain type of conveyor belts.
 
     express_belts: a boolean, True - for express belts, False - for all belts.
 
-    Return a dictionary of coordinates as keys and a tuple of robot and its tile as values.
+    Return a dictionary of robots as keys and their next coordinates as values.
     """
-    robots_on_belts = {}
+    robots_next_coordinates = {}
     for robot in state.robots:
         for tile in state.get_tiles(robot.coordinates):
             if tile.check_belts(express_belts):
-                robots_on_belts[robot.coordinates] = (robot, tile)
-    return robots_on_belts
+                # Get next coordinates of robots on belts
+                robots_next_coordinates[robot] = get_next_coordinates(robot.coordinates, tile.direction.get_new_direction(tile.direction_out))
+                break
+            else:
+                # Other robots will have the same coordinates
+                robots_next_coordinates[robot] = robot.coordinates
+    return robots_next_coordinates
+
+
+def get_colliding_robots(robots):
+    """
+    Get a list of robots, who would collide during belt movement.
+    """
+    colliding_robots = []
+    for robot in robots.keys():
+        # Check if there are duplicate values of next coordinates.
+        if is_duplicate(robots, robot):
+            colliding_robots.append(robot)
+    return colliding_robots
+
+
+def is_duplicate(data, key):
+    """
+    For input key check if its value is duplicate of other values in dictionary.
+    """
+    value = data[key]
+    for current_key, current_value in data.items():
+        if current_value == value and current_key != key:
+            return True
+    return False
 
 
 def apply_tile_effects(state):
