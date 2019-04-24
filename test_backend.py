@@ -1,6 +1,6 @@
 import pytest
 
-from backend import create_robots, get_start_state, Robot, State, MovementCard, RotationCard, apply_tile_effects
+from backend import create_robots, get_start_state, Robot, State, MovementCard, RotationCard, apply_tile_effects, get_direction_from_coordinates
 from util import Direction, Rotation
 from tile import Tile, HoleTile, GearTile, PusherTile, RepairTile, FlagTile
 from loading import get_board
@@ -506,7 +506,6 @@ def test_robot_movement_on_crossroad_belts(input_coordinates, output_coordinates
     assert robot.coordinates == output_coordinates
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize(("input_coordinates", "output_direction"),
                          [((1, 10), Direction.W),
                          ((1, 9), Direction.E),
@@ -524,6 +523,9 @@ def test_robot_movement_on_crossroad_belts(input_coordinates, output_coordinates
                          ((4, 2), Direction.N),
                          ((5, 1), Direction.E),
                          ((7, 1), Direction.W),
+                         ((10, 0), Direction.W),
+                         ((9, 1), Direction.E),
+                         ((11, 2), Direction.E),
                           ])
 def test_change_of_robots_direction_on_rotating_belts(input_coordinates, output_direction):
     """
@@ -535,6 +537,17 @@ def test_change_of_robots_direction_on_rotating_belts(input_coordinates, output_
     state = State(board, [robot])
     apply_tile_effects(state)
     assert robot.direction == output_direction
+
+
+@pytest.mark.parametrize(("start_coordinates", "stop_coordinates", "output_direction"),
+                         [((0, 0), (0, 1), Direction.N),
+                         ((0, 1), (0, 0), Direction.S),
+                         ((0, 0), (1, 0), Direction.E),
+                         ((1, 0), (0, 0), Direction.W),
+                          ])
+def test_direction_from_coordinates(start_coordinates, stop_coordinates, output_direction):
+    direction = get_direction_from_coordinates(start_coordinates, stop_coordinates)
+    assert direction == output_direction
 
 
 @pytest.mark.parametrize(("input_coordinates", "input_direction"),

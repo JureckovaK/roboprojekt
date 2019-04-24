@@ -10,6 +10,7 @@ from loading import get_board, get_map_data
 
 MAX_DAMAGE_VALUE = 10
 
+
 class Robot:
     def __init__(self, direction, coordinates, name):
         self.direction = direction
@@ -32,7 +33,7 @@ class Robot:
         Return True if robot is inactive (not on the game board).
         All inactive robots have coordinates None.
         """
-        return self.coordinates == None
+        return self.coordinates is None
 
     def __repr__(self):
         return "<Robot {} {} {} Lives: {} Flags: {} Damages: {}, Inactive: {}>".format(
@@ -61,7 +62,7 @@ class Robot:
         # He can still move the other robots on the way.
         if distance < 0:
             self.walk((-distance), state, direction.get_new_direction(Rotation.U_TURN),
-                        push_others=push_others)
+                      push_others=push_others)
         else:
             for step in range(distance):
                 # Check the absence of a walls before moving.
@@ -159,7 +160,6 @@ class Robot:
                 else:
                     next_coordinates = get_next_coordinates(next_coordinates, self.direction)
 
-
     def be_damaged(self, strength=1):
         """
         Give one or more damages to the robot.
@@ -174,7 +174,6 @@ class Robot:
         else:
             # Robot is damaged so much that laser kills it.
             self.die()
-
 
     def get_distance_to_board_end(self, state):
         """
@@ -443,6 +442,12 @@ def move_belts(state):
 
         # All collision sorted, move robots to new coordinates
         for robot in robots_next_coordinates:
+            if robot.coordinates != robots_next_coordinates[robot]:
+                # Get direction of belt movement
+                direction = get_direction_from_coordinates(robot.coordinates, robots_next_coordinates[robot])
+                # Check if the next tile is rotating belt.
+                for tile in state.get_tiles(robots_next_coordinates[robot]):
+                    tile.rotate_robot_on_belt(robot, direction)
             robot.coordinates = robots_next_coordinates[robot]
 
 
@@ -488,6 +493,22 @@ def is_duplicate(data, key):
         if current_value == value and current_key != key:
             return True
     return False
+
+
+def get_direction_from_coordinates(start_coordinates, stop_coordinates):
+    """
+    Get Direction class object according to change in coordinates.
+    Work only for change by one tile.
+    """
+    x, y = start_coordinates
+    if (x, y + 1) == stop_coordinates:
+        return Direction.N
+    elif (x, y - 1) == stop_coordinates:
+        return Direction.S
+    elif (x + 1, y) == stop_coordinates:
+        return Direction.E
+    elif (x - 1, y) == stop_coordinates:
+        return Direction.W
 
 
 def apply_tile_effects(state):
