@@ -631,6 +631,23 @@ def test_robot_does_not_move_onto_another_robot(input_coordinates_1, input_coord
     assert robots[1].coordinates == output_coordinates_2
 
 
+@pytest.mark.parametrize(("input_coordinates_1", "input_coordinates_2"),
+                         [((10, 4), (11, 4)),
+                          ])
+def test_robots_cannot_switch_places(input_coordinates_1, input_coordinates_2):
+    """
+    Test robots cannot switch places on belts that go against each other.
+    """
+    robots = [Robot(Direction.N, input_coordinates_1, "tester"),
+              Robot(Direction.N, input_coordinates_2, "tester"),
+              ]
+    board = get_board("maps/test_belts.json")
+    state = State(board, robots)
+    apply_tile_effects(state)
+    assert robots[0].coordinates == input_coordinates_1
+    assert robots[1].coordinates == input_coordinates_2
+
+
 @pytest.mark.parametrize(("direction", "card", "new_coordinates"),
                          [(Direction.E, MovementCard(100, 1), (5, 7)),
                          (Direction.E, MovementCard(100, 2), (6, 7)),

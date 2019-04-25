@@ -44,8 +44,8 @@ def move_once(t):
     """
 
     for robot in state.get_active_robots():
-        robot.walk(3, state)
-        # print(robot)
+    #    robot.walk(3, state)
+         print(robot)
 
     apply_tile_effects(state)
     print("After tile effects:")

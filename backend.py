@@ -429,6 +429,8 @@ def move_belts(state):
     for express_belts in [True, False]:
         # Get robots next coordinates after move of conveyor belts
         robots_next_coordinates = get_robots_next_coordinates(state, express_belts)
+
+        # Solve colliding robots
         while True:
             colliding_robots = get_colliding_robots(robots_next_coordinates)
             if not colliding_robots:
@@ -438,7 +440,14 @@ def move_belts(state):
                 # They
                 for robot in colliding_robots:
                     robots_next_coordinates[robot] = robot.coordinates
-        # Add case for robots, who would switch places!!!
+        # Solve robots who would switch coordinates
+        while True:
+            switching_robots = get_switching_robots(robots_next_coordinates)
+            if not switching_robots:
+                break
+            else:
+                for robot in switching_robots:
+                    robots_next_coordinates[robot] = robot.coordinates
 
         # All collision sorted, move robots to new coordinates
         for robot in robots_next_coordinates:
@@ -493,6 +502,19 @@ def is_duplicate(data, key):
         if current_value == value and current_key != key:
             return True
     return False
+
+
+def get_switching_robots(robots):
+    """
+    Get list of robots, who would switch coordinates during belt movement.
+    """
+    switching_robots = []
+    for robot1, next_coordinates1 in robots.items():
+        for robot2, next_coordinates2 in robots.items():
+            if robot1 != robot2:
+                if robot1.coordinates == next_coordinates2 and robot2.coordinates == next_coordinates1:
+                    switching_robots.append(robot1)
+    return switching_robots
 
 
 def get_direction_from_coordinates(start_coordinates, stop_coordinates):
