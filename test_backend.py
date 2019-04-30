@@ -546,6 +546,9 @@ def test_change_of_robots_direction_on_rotating_belts(input_coordinates, output_
                          ((1, 0), (0, 0), Direction.W),
                           ])
 def test_direction_from_coordinates(start_coordinates, stop_coordinates, output_direction):
+    """
+    Test direction is calculated correctly from coordinates.
+    """
     direction = get_direction_from_coordinates(start_coordinates, stop_coordinates)
     assert direction == output_direction
 
@@ -578,8 +581,7 @@ def test_robots_dont_change_direction_on_rotating_belts_after_move_card(input_co
                           ])
 def test_two_robots_movements_on_belts(input_coordinates_1, input_coordinates_2, output_coordinates_1, output_coordinates_2):
     """
-    Test movement of two robots in a row on belts. Robots have to moved
-    in certain order to perform the belt movements right.
+    Test movement of two robots in a row on belts.
     """
     robots = [Robot(Direction.N, input_coordinates_1, "tester"),
               Robot(Direction.N, input_coordinates_2, "tester"),
@@ -597,8 +599,8 @@ def test_two_robots_movements_on_belts(input_coordinates_1, input_coordinates_2,
 def test_two_robots_movement_on_T_crossroad(input_coordinates_1, input_coordinates_2, output_coordinates_1, output_coordinates_2):
     """
     Test movement of two robots on T crossroads. Robots are facing each other
-    across the crossroad. Both want to go through this crosscoard, but either
-    of them isn't moved.
+    across the crossroad. Both want to go through this crossroad, but none them
+    move.
     """
     robots = [Robot(Direction.N, input_coordinates_1, "tester"),
               Robot(Direction.N, input_coordinates_2, "tester"),

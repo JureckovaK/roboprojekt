@@ -437,7 +437,6 @@ def move_belts(state):
                 break
             else:
                 # For colliding robots set next coordinates to their current.
-                # They
                 for robot in colliding_robots:
                     robots_next_coordinates[robot] = robot.coordinates
         # Solve robots who would switch coordinates
@@ -446,6 +445,7 @@ def move_belts(state):
             if not switching_robots:
                 break
             else:
+                # For switching robots set next coordinates to their current.
                 for robot in switching_robots:
                     robots_next_coordinates[robot] = robot.coordinates
 
