@@ -96,9 +96,20 @@ def test_map_returns_correct_image_path(index_number, expected_value):
     assert loaded_tileset[index_number]["image"] == expected_value
 
 
-def test_board_structure():
-
-    pass
+@pytest.mark.parametrize(
+    ("coordinates", "tiles"),
+    [
+        ((0, 0), [Tile]),
+    ]
+)
+def test_board_structure(coordinates, tiles):
+    """
+    Test creation of correct board dictionary structure.
+    """
+    board = get_board("maps/test_3.json")
+    assert isinstance(board, dict)
+    assert isinstance(board[coordinates], list)
+    assert isinstance(board[coordinates][0], tiles[0])
 
 
 CONVERT_TEST_DATA = {
