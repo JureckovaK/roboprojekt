@@ -428,7 +428,7 @@ def move_belts(state):
     # Then all belts move robots by one tile (express attribute is set to False).
     for express_belts in [True, False]:
         # Get robots next coordinates after move of conveyor belts
-        robots_next_coordinates = get_robots_next_coordinates(state, express_belts)
+        robots_next_coordinates = get_next_coordinates_for_belts(state, express_belts)
 
         # Solve colliding robots
         while True:
@@ -441,12 +441,12 @@ def move_belts(state):
                     robots_next_coordinates[robot] = robot.coordinates
         # Solve robots who would switch coordinates
         while True:
-            switching_robots = get_switching_robots(robots_next_coordinates)
-            if not switching_robots:
+            swapping_robots = get_swapping_robots(robots_next_coordinates)
+            if not swapping_robots:
                 break
             else:
-                # For switching robots set next coordinates to their current.
-                for robot in switching_robots:
+                # For swapping robots set next coordinates to their current.
+                for robot in swapping_robots:
                     robots_next_coordinates[robot] = robot.coordinates
 
         # All collision sorted, move robots to new coordinates
@@ -460,7 +460,7 @@ def move_belts(state):
             robot.coordinates = robots_next_coordinates[robot]
 
 
-def get_robots_next_coordinates(state, express_belts):
+def get_next_coordinates_for_belts(state, express_belts):
     """
     Get all robot's next coordinates after move of certain type of conveyor belts.
 
@@ -504,17 +504,17 @@ def is_duplicate(data, key):
     return False
 
 
-def get_switching_robots(robots):
+def get_swapping_robots(robots):
     """
     Get list of robots, who would switch coordinates during belt movement.
     """
-    switching_robots = []
+    swapping_robots = []
     for robot1, next_coordinates1 in robots.items():
         for robot2, next_coordinates2 in robots.items():
             if robot1 != robot2:
                 if robot1.coordinates == next_coordinates2 and robot2.coordinates == next_coordinates1:
-                    switching_robots.append(robot1)
-    return switching_robots
+                    swapping_robots.append(robot1)
+    return swapping_robots
 
 
 def get_direction_from_coordinates(start_coordinates, stop_coordinates):
