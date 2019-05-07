@@ -74,8 +74,8 @@ class Tile:
 
     def rotate_robot_on_belt(self, robot, direction):
         """
-        Rotate robot on rotating conveyor belts. If robot will be rotated,
-        is decided by the direction he entered a tile.
+        Rotate robot on rotating conveyor belts. If robot's rotated,
+        will be decided by the direction he entered a tile.
         direction: direction from which robot entered a tile
         """
         return robot
