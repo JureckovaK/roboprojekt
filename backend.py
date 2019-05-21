@@ -23,6 +23,7 @@ class Robot:
         self.damages = 4
         self.power_down = False
         self.name = name
+        self.perma_damages = 0
 
     @property
     # More info about @property decorator - official documentation:
@@ -45,7 +46,8 @@ class Robot:
         """
         return {"name": self.name, "coordinates": self.coordinates, "lives": self.lives,
                 "flags": self.flags, "damages": self.damages, "power down": self.power_down,
-                "direction": self.direction.value, "start coordinates": self.start_coordinates}
+                "direction": self.direction.value, "start coordinates": self.start_coordinates,
+                "perma_damages": self.perma_damages}
 
     def walk(self, distance, state, direction=None, push_others=True):
         """
@@ -589,18 +591,32 @@ def apply_tile_effects(state, register):
             tile.repair_robot(robot, state, register)
 
 
-def set_robots_for_new_turn(state):
+def set_robots_for_new_turn(state, robots_cannot_die):
     """
-    After 5th register there comes evaluation of the robots' state.
+    Evaluation of the robots' state.
+
+    robots_cannot_die: a boolean to change game rules
+
+    According to game rules (robots_cannot_die=False):
     "Dead" robots who don't have any lives left, are deleted from the robot's lists.
+    Change of game rules (robots_cannot_die=True):
+    "Dead" robots who don't have any lives left, receive one permanent damage
+    and they can continue in the game.
+
     "Inactive" robots who have lost one life during the round,
     will reboot on start coordinates.
     """
-
-    # Delete robots with zero lives
-    state.robots = [robot for robot in state.robots if robot.lives > 0]
+    if robots_cannot_die:
+        # Robots who lost all lives receive one pernament damage.
+        for robot in state.robots:
+            if robot.lives < 0:
+                robot.perma_damages += 1
+                robot.lives = 3
+    else:
+        # Delete robots with zero lives.
+        state.robots = [robot for robot in state.robots if robot.lives > 0]
     for robot in state.robots:
-        # Robot will now ressurect at his start coordinates
+        # Robot will now ressurect at his start coordinates.
         if robot.inactive:
             robot.coordinates = robot.start_coordinates
             robot.damages = 0
@@ -635,17 +651,20 @@ def apply_register(state, register):
         card.apply_effect(robot, state)
 
 
-def apply_all_effects(state, registers=5):
+def apply_all_effects(state, registers=5, robots_cannot_die=True):
     """
     Apply all game effects: for the given number of iterations
     perform robot's cards effects and tile effects on a given game state.
     At the end ressurect the inactive robots to their starting coordinates.
     registers: default iterations count is 5, can be changed for testing purposes.
+    robots_cannot_die: default value is True and it changes game rules.
+    Robots cannot die in the game, instead they receive permanent damages.
+    If the value is False, the game is over for robots with zero lives.
     """
     _apply_cards_and_tiles_effects(state, registers)
 
     # After last register ressurect the robots to their starting coordinates.
-    set_robots_for_new_turn(state)
+    set_robots_for_new_turn(state, robots_cannot_die)
 
 
 def _apply_cards_and_tiles_effects(state, registers):
