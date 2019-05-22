@@ -150,9 +150,9 @@ def test_power_down_robots_dont_shoot():
 # RepairTile
 
 @pytest.mark.parametrize(("damages_before", "tile", "damages_after"),
-                         [(0, RepairTile(None, None, {'new_start': True}), 0),
-                         (9, RepairTile(None, None, {'new_start': True}), 8),
-                         (3, RepairTile(None, None, {'new_start': True}), 2),
+                         [(0, RepairTile(None, None, None, {'new_start': True}), 0),
+                         (9, RepairTile(None, None, None, {'new_start': True}), 8),
+                         (3, RepairTile(None, None, None, {'new_start': True}), 2),
                           ])
 def test_robot_is_repaired_after_5th_round(damages_before, tile, damages_after):
     """
@@ -168,10 +168,10 @@ def test_robot_is_repaired_after_5th_round(damages_before, tile, damages_after):
 
 
 @pytest.mark.parametrize(("damages", "tile", "current_register"),
-                         [(0, RepairTile(None, None, {'new_start': True}), 0),
-                         (9, RepairTile(None, None, {'new_start': True}), 1),
-                         (3, RepairTile(None, None, {'new_start': True}), 2),
-                         (5, RepairTile(None, None, {'new_start': True}), 3),
+                         [(0, RepairTile(None, None, None, {'new_start': True}), 0),
+                         (9, RepairTile(None, None, None, {'new_start': True}), 1),
+                         (3, RepairTile(None, None, None, {'new_start': True}), 2),
+                         (5, RepairTile(None, None, None, {'new_start': True}), 3),
                           ])
 def test_robot_is_not_repaired(damages, tile, current_register):
     """
@@ -185,8 +185,8 @@ def test_robot_is_not_repaired(damages, tile, current_register):
 
 
 @pytest.mark.parametrize(("tile", "coordinates_after"),
-                         [(RepairTile(None, None, {'new_start': True}), (0, 0)),
-                         (RepairTile(None, None, {'new_start': False}), (1, 1)),
+                         [(RepairTile(None, None, None, {'new_start': True}), (0, 0)),
+                         (RepairTile(None, None, None, {'new_start': False}), (1, 1)),
                           ])
 def test_robot_changed_start_coordinates(tile, coordinates_after):
     """
@@ -215,7 +215,7 @@ def test_robot_died(lives_before, lives_after):
     and his coordinates changed to the None.
     """
     robot = Robot(Direction.N, (0, 0), "tester")
-    state = State({(0, 1): [HoleTile(None, None, None)]}, [robot])
+    state = State({(0, 1): [HoleTile()]}, [robot])
     robot.lives = lives_before
     robot.walk(1, state)
     assert robot.lives == lives_after
@@ -226,9 +226,9 @@ def test_robot_died(lives_before, lives_after):
 # FlagTile
 
 @pytest.mark.parametrize(("flags_before", "tile", "flags_after"),
-                         [(3, FlagTile(None, None, {'number': 1}),  3),
-                         (3, FlagTile(None, None, {'number': 4}),  4),
-                         (3, FlagTile(None, None, {'number': 5}),  3),
+                         [(3, FlagTile(None, None, None, {'number': 1}),  3),
+                         (3, FlagTile(None, None, None, {'number': 4}),  4),
+                         (3, FlagTile(None, None, None, {'number': 5}),  3),
                           ])
 def test_robot_collected_flags(flags_before, tile, flags_after):
     """
@@ -243,9 +243,9 @@ def test_robot_collected_flags(flags_before, tile, flags_after):
 
 
 @pytest.mark.parametrize(("tile"),
-                         [(FlagTile(None, None, {'number': 1})),
-                         (FlagTile(None, None, {'number': 4})),
-                         (FlagTile(None, None, {'number': 5})),
+                         [(FlagTile(None, None, None, {'number': 1})),
+                         (FlagTile(None, None, None, {'number': 4})),
+                         (FlagTile(None, None, None, {'number': 5})),
                           ])
 def test_robot_changed_coordinates(tile):
     """
@@ -309,11 +309,11 @@ def test_robot_is_damaged_by_laser(input_coordinates, damages_after):
 # PusherTile
 
 @pytest.mark.parametrize(("register", "tile", "output_coordinates"),
-                         [(0, PusherTile(Direction.N, None, {'register': 1}), (1, 0)),
-                         (1, PusherTile(Direction.N, None, {'register': 1}), (1, 1)),
-                         (2, PusherTile(Direction.N, None, {'register': 0}), (1, 1)),
-                         (3, PusherTile(Direction.N, None, {'register': 0}), (1, 0)),
-                         (4, PusherTile(Direction.N, None, {'register': 1}), (1, 0)),
+                         [(0, PusherTile(Direction.N, None, None, {'register': 1}), (1, 0)),
+                         (1, PusherTile(Direction.N, None, None, {'register': 1}), (1, 1)),
+                         (2, PusherTile(Direction.N, None, None, {'register': 0}), (1, 1)),
+                         (3, PusherTile(Direction.N, None, None, {'register': 0}), (1, 0)),
+                         (4, PusherTile(Direction.N, None, None, {'register': 1}), (1, 0)),
                           ])
 def test_robot_is_pushed_at_the_correct_round(register, tile, output_coordinates):
     """
@@ -324,17 +324,17 @@ def test_robot_is_pushed_at_the_correct_round(register, tile, output_coordinates
     to the value on the tile.
     """
     robot = Robot(Direction.W, (1, 1), "tester")
-    state = State({(1, 0): [Tile(None, None, None)], (1, 1): [tile]}, [robot])
+    state = State({(1, 0): [Tile(None, None, None, None)], (1, 1): [tile]}, [robot])
     apply_tile_effects(state, register)
     assert robot.direction == Direction.W
     assert robot.coordinates == output_coordinates
 
 
 @pytest.mark.parametrize(("tile", "output_coordinates"),
-                         [(PusherTile(Direction.N, None, {'register': 1}), (1, 0)),
-                         (PusherTile(Direction.S, None, {'register': 1}), (1, 2)),
-                         (PusherTile(Direction.E, None, {'register': 1}), (0, 1)),
-                         (PusherTile(Direction.W, None, {'register': 1}), (2, 1)),
+                         [(PusherTile(Direction.N, None, None, {'register': 1}), (1, 0)),
+                         (PusherTile(Direction.S, None, None, {'register': 1}), (1, 2)),
+                         (PusherTile(Direction.E, None, None, {'register': 1}), (0, 1)),
+                         (PusherTile(Direction.W, None, None, {'register': 1}), (2, 1)),
                           ])
 def test_robot_is_pushed_to_the_correct_direction(tile, output_coordinates):
     """
@@ -344,17 +344,21 @@ def test_robot_is_pushed_to_the_correct_direction(tile, output_coordinates):
     The test asserts the coordinates change to a correct ones (in a correct direction).
     """
     robot = Robot(Direction.S, (1, 1), "tester")
-    state = State({(1, 0): [Tile(None, None, None)], (0, 1): [Tile(None, None, None)], (2, 1): [Tile(None, None, None)], (1, 2): [Tile(None, None, None)], (1, 1): [tile]}, [robot])
+    state = State({(1, 0): [Tile(None, None, None, None)],
+                   (0, 1): [Tile(None, None, None, None)],
+                   (2, 1): [Tile(None, None, None, None)],
+                   (1, 2): [Tile(None, None, None, None)],
+                   (1, 1): [tile]}, [robot])
     apply_tile_effects(state, 0)
     assert robot.direction == Direction.S
     assert robot.coordinates == output_coordinates
 
 
 @pytest.mark.parametrize(("tile"),
-                         [(PusherTile(Direction.N, None, {'register': 1})),
-                         (PusherTile(Direction.S, None, {'register': 1})),
-                         (PusherTile(Direction.E, None, {'register': 1})),
-                         (PusherTile(Direction.W, None, {'register': 1})),
+                         [(PusherTile(Direction.N, None, None, {'register': 1})),
+                         (PusherTile(Direction.S, None, None, {'register': 1})),
+                         (PusherTile(Direction.E, None, None, {'register': 1})),
+                         (PusherTile(Direction.W, None, None, {'register': 1})),
                           ])
 def test_robot_is_pushed_out_of_the_board(tile):
     """
