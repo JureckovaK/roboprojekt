@@ -154,7 +154,7 @@ def test_robot_is_pushed_to_the_correct_direction(tile, output_coordinates):
                    (2, 1): [Tile(None, None, None, None)],
                    (1, 2): [Tile(None, None, None, None)],
                    (1, 1): [tile]}, [robot])
-    state.apply_tile_effects(1)
+    state.apply_tile_effects(0)
     assert robot.direction == Direction.S
     assert robot.coordinates == output_coordinates
 
