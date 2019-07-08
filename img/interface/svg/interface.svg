@@ -409,8 +409,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.82526557"
-     inkscape:cx="388.56445"
-     inkscape:cy="575.12254"
+     inkscape:cx="112.41873"
+     inkscape:cy="714.78018"
      inkscape:document-units="mm"
      inkscape:current-layer="layer4"
      showgrid="true"
@@ -1430,114 +1430,129 @@
            id="tspan11116"
            sodipodi:role="line">LOCK</tspan></text>
     </g>
-    <rect
-       style="fill:#ffffff;stroke-width:0.3;stroke:#000000;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect175"
-       width="59.147243"
-       height="8.4666662"
-       x="8.6269684"
-       y="120.66531" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="9.0498838"
-       y="126.44897"
-       id="text183"><tspan
-         sodipodi:role="line"
-         x="9.0498838"
-         y="126.44897"
-         style="font-size:4.93888903px;stroke-width:0.26458332"
-         id="tspan185">Move cursor:</tspan></text>
-    <path
-       style="fill:#000000;stroke:#000000;stroke-width:0.94490391;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 54.814745,123.74753 v 1.88679 h 2.830253 v 1.88687 l 2.830256,-2.83026 -2.830256,-2.83025 v 1.88685 z"
-       id="path3898"
-       inkscape:connector-curvature="0" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:26.55373192px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.66384327"
-       x="62.156929"
-       y="126.48635"
-       id="text4724"
-       inkscape:transform-center-x="-1.1946266"
-       inkscape:transform-center-y="0.65161551"><tspan
-         sodipodi:role="line"
-         id="tspan4722"
-         x="62.156929"
-         y="126.48635"
-         style="font-size:4.93888903px;stroke-width:0.66384327">M</tspan></text>
-    <path
-       style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.94490397;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 52.710774,123.74753 v 1.88679 h -2.830253 v 1.88687 l -2.830256,-2.83026 2.830256,-2.83025 v 1.88685 z"
-       id="path3898-8"
-       inkscape:connector-curvature="0" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:26.55373192px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.66384327"
-       x="42.310951"
-       y="126.48635"
-       id="text4724-2"
-       inkscape:transform-center-x="-1.1946266"
-       inkscape:transform-center-y="0.65161551"><tspan
-         sodipodi:role="line"
-         id="tspan4722-2"
-         x="42.310951"
-         y="126.48635"
-         style="font-size:4.93888903px;stroke-width:0.66384327">N</tspan></text>
-    <rect
-       style="display:inline;fill:#ffffff;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none;stroke:#000000;stroke-opacity:1"
-       id="rect175-7"
-       width="47.605507"
-       height="8.4666662"
-       x="68.504639"
-       y="120.66531" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:4.93888855px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="69.275726"
-       y="126.69006"
-       id="text4765"><tspan
-         sodipodi:role="line"
-         id="tspan4763"
-         x="69.275726"
-         y="126.69006"
-         style="stroke-width:0.26458332">Return one card: I</tspan></text>
-    <rect
-       style="display:inline;fill:#ffffff;stroke-width:0.3;stroke:#000000;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect175-8"
-       width="48.246716"
-       height="8.4666662"
-       x="116.84057"
-       y="120.66531" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:4.93888855px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="117.40051"
-       y="126.52976"
-       id="text4773"><tspan
-         sodipodi:role="line"
-         id="tspan4771"
-         x="117.40051"
+    <g
+       id="g1090">
+      <rect
+         y="120.58909"
+         x="1.3052707"
+         height="8.4588051"
+         width="62.345421"
+         id="rect175"
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.30786094;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text183"
+         y="126.36882"
+         x="3.0066714"
+         style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           id="tspan185"
+           style="font-size:4.93888903px;stroke-width:0.26458332"
+           y="126.36882"
+           x="3.0066714"
+           sodipodi:role="line">Move cursor:</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="path3898"
+         d="m 49.847378,123.66738 v 1.88679 h 2.830253 v 1.88687 l 2.830256,-2.83026 -2.830256,-2.83025 v 1.88685 z"
+         style="fill:#000000;stroke:#000000;stroke-width:0.94490391;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         inkscape:transform-center-y="0.65161551"
+         inkscape:transform-center-x="-1.1946266"
+         id="text4724"
+         y="126.4062"
+         x="57.235832"
+         style="font-style:normal;font-weight:normal;font-size:26.55373192px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.66384327"
+         xml:space="preserve"><tspan
+           style="font-size:4.93888903px;stroke-width:0.66384327"
+           y="126.4062"
+           x="57.235832"
+           id="tspan4722"
+           sodipodi:role="line">M</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="path3898-8"
+         d="m 47.360362,123.66738 v 1.88679 h -2.830253 v 1.88687 l -2.830256,-2.83026 2.830256,-2.83025 v 1.88685 z"
+         style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.94490397;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         inkscape:transform-center-y="0.65161551"
+         inkscape:transform-center-x="-1.1946266"
+         id="text4724-2"
+         y="126.4062"
+         x="36.267738"
+         style="font-style:normal;font-weight:normal;font-size:26.55373192px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.66384327"
+         xml:space="preserve"><tspan
+           style="font-size:4.93888903px;stroke-width:0.66384327"
+           y="126.4062"
+           x="36.267738"
+           id="tspan4722-2"
+           sodipodi:role="line">N</tspan></text>
+    </g>
+    <g
+       id="g1041"
+       transform="translate(2.0520206,0.08015093)">
+      <rect
+         y="120.50795"
+         x="63.698521"
+         height="8.4607897"
+         width="49.523254"
+         id="rect175-7"
+         style="display:inline;fill:#ffffff;stroke:#000000;stroke-width:0.30587676;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text4765"
          y="126.52976"
-         style="stroke-width:0.26458332">Return all cards: O</tspan></text>
-    <rect
-       style="display:inline;fill:#ffffff;stroke-width:0.3;stroke:#000000;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect175-5"
-       width="29.010483"
-       height="8.4666662"
-       x="165.81769"
-       y="120.66531" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:4.93888855px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="166.71205"
-       y="126.54182"
-       id="text4781"><tspan
-         sodipodi:role="line"
-         id="tspan4779"
-         x="166.71205"
-         y="126.54182"
-         style="stroke-width:0.26458332">Confirm: K</tspan></text>
+         x="65.428482"
+         style="font-style:normal;font-weight:normal;font-size:4.93888855px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="stroke-width:0.26458332"
+           y="126.52976"
+           x="65.428482"
+           id="tspan4763"
+           sodipodi:role="line">Return one card: I</tspan></text>
+    </g>
+    <g
+       id="g1046"
+       transform="translate(1.1703565,0.08015189)">
+      <rect
+         y="120.5091"
+         x="116.20345"
+         height="8.4584837"
+         width="50.963665"
+         id="rect175-8"
+         style="display:inline;fill:#ffffff;stroke:#000000;stroke-width:0.30818236;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text4773"
+         y="126.57716"
+         x="118.12186"
+         style="font-style:normal;font-weight:normal;font-size:4.93888855px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="stroke-width:0.26458332"
+           y="126.57716"
+           x="118.12186"
+           id="tspan4771"
+           sodipodi:role="line">Return all cards: O</tspan></text>
+    </g>
+    <g
+       id="g1079"
+       transform="translate(2.1884838e-6)">
+      <rect
+         y="120.59092"
+         x="170.44031"
+         height="8.4551487"
+         width="31.323345"
+         id="rect175-5"
+         style="display:inline;fill:#ffffff;stroke:#000000;stroke-width:0.31151739;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text4781"
+         y="126.66937"
+         x="172.4911"
+         style="font-style:normal;font-weight:normal;font-size:4.93888855px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="stroke-width:0.26458332"
+           y="126.66937"
+           x="172.4911"
+           id="tspan4779"
+           sodipodi:role="line">Confirm: K</tspan></text>
+    </g>
     <g
        id="g4977"
        transform="translate(0,-1.5875)"
