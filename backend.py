@@ -80,6 +80,7 @@ class Robot:
             direction - Default value is set to robot's direction.
         When robot walks, he can move other robots in the way.
         """
+        log_move = []
         if direction is None:
             direction = self.direction
 
@@ -103,10 +104,11 @@ class Robot:
                 # Move robot in the way.
                 if robot_in_the_way:
                     if push_others:
-                        robot_in_the_way.walk(1, state, direction)
+                        log_push = robot_in_the_way.walk(1, state, direction)
                         # Check that robot moved.
                         if robot_in_the_way.coordinates == next_coordinates:
                             break
+                        log_move.append(log_push)
                     else:
                         break
 
@@ -114,9 +116,11 @@ class Robot:
                 self.coordinates = next_coordinates
                 # Check hole on next coordinates.
                 self.fall_into_hole(state)
+                log_move.append({'Move': {self.name: direction.coor_delta}})
                 # If robot falls into hole, he becomes inactive.
                 if self.inactive:
                     break
+        return log_move
 
     def move(self, direction, distance, state):
         """
@@ -126,7 +130,7 @@ class Robot:
         he doesn't have enough power to push other robots. If there is a robot
         in the way, the movement is stopped.
         """
-        self.walk(distance=distance, state=state, direction=direction, push_others=False)
+        return self.walk(distance=distance, state=state, direction=direction, push_others=False)
 
     def die(self):
         """
@@ -140,7 +144,9 @@ class Robot:
         """
         Rotate robot according to a given direction.
         """
+        log = []
         self.direction = self.direction.get_new_direction(where_to)
+        return log.append({'Rotate': {self.name: where_to.value}})
 
     def fall_into_hole(self, state):
         """
@@ -267,7 +273,7 @@ class MovementCard(Card):
         """
         Card calls robot's method walk.
         """
-        robot.walk(self.distance, state)
+        return robot.walk(self.distance, state)
 
     def as_dict(self):
         """
@@ -311,7 +317,7 @@ class RotationCard(Card):
         """
         Card calls robot's method rotate.
         """
-        robot.rotate(self.rotation)
+        return robot.rotate(self.rotation)
 
     def as_dict(self):
         """
@@ -602,9 +608,11 @@ class State:
         For the given register sort the robot's list according to card's priorities.
         Apply cards effects on the sorted robots.
         """
+        log = []
         robot_cards = self.get_robots_ordered_by_cards_priority(register)
         for robot, card in robot_cards:
-            card.apply_effect(robot, self)
+            log.append(card.apply_effect(robot, self))
+        return log
 
     def apply_all_effects(self, registers=5):
         """
@@ -613,28 +621,31 @@ class State:
         At the end ressurect the inactive robots to their starting coordinates.
         registers: default iterations count is 5, can be changed for testing purposes.
         """
-        self._apply_cards_and_tiles_effects(registers)
+        log = self._apply_cards_and_tiles_effects(registers)
 
         # After last register ressurect the robots to their starting coordinates.
         self.set_robots_for_new_turn()
+        return log
 
     def _apply_cards_and_tiles_effects(self, registers):
         """
         Private method without ressurect mode - for testing purposes.
         It is called within apply_all_effects. Do not call it separately.
         """
+        log = []
         for register in range(registers):
             # try -  except was introduced for devel purposes - it may happen that
             # robots have no card on hand and we still want to try loading the game
             try:
                 # Check the card's priority
-                self.apply_register(register)
+                log.append(self.apply_register(register))
 
             except NoCardError:
                 print("No card on hand, continue to tile effects.")
                 pass
 
             self.apply_tile_effects(register)
+        print(log)
 
     def create_card_pack(self):
         """

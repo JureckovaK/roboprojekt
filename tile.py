@@ -43,7 +43,7 @@ class Tile:
         Take away one robot life, set him to inactive mode
         and set his coordinates to None.
         """
-        return robot
+        pass
 
     def check_belts(self, express_belts):
         """
@@ -61,19 +61,19 @@ class Tile:
         will be decided by the direction he entered a tile.
         direction: direction from which robot entered a tile
         """
-        return robot
+        pass
 
     def push_robot(self, robot, state, register):
         """
         Move robot by one tile during a specific register phase.
         """
-        return robot
+        pass
 
     def rotate_robot(self, robot):
         """
         Rotate robot by 90° to the left or right according to tile properties.
         """
-        return robot
+        pass
 
     def shoot_robot(self, robot, state):
         """
@@ -81,25 +81,25 @@ class Tile:
         the strength of laser. If the new number of damages is greater than 9,
         robot is killed.
         """
-        return robot
+        pass
 
     def collect_flag(self, robot):
         """
         Collect flag by robot and change robot's start coordinates.
         """
-        return robot
+        pass
 
     def repair_robot(self, robot, state):
         """
         Repair one robot's damage.
         """
-        return robot
+        pass
 
     def set_new_start(self, robot, state):
         """
         Change robot's start coordinates, if possible by tile properties.
         """
-        return robot
+        pass
 
 
 class WallTile(Tile):
