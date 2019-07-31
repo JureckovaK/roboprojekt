@@ -551,31 +551,43 @@ class State:
         # Activate pusher
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                log_effects.append(tile.push_robot(robot, self, register))
+                log_push = tile.push_robot(robot, self, register)
+                if log_push:
+                    log_effects.append(log_push)
                 if robot.inactive:
                     break
 
         # Activate gear
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                log_effects.append(tile.rotate_robot(robot))
+                log_gear = tile.rotate_robot(robot)
+                if log_gear:
+                    log_effects.append(log_gear)
 
         # Activate laser
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.shoot_robot(robot, self)
+                log_laser_tiles = tile.shoot_robot(robot, self)
+                if log_laser_tiles:
+                    log_effects.append(log_laser_tiles)
                 if robot.inactive:
                     break
 
         # Activate robot laser
         for robot in self.get_active_robots():
-            robot.shoot(self)
+            log_laser_robot = robot.shoot(self)
+            if log_laser_robot:
+                log_effects.append(log_laser_robot)
 
         # Collect flags, repair robots
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.collect_flag(robot)
-                tile.set_new_start(robot, self)
+                log_flag = tile.collect_flag(robot)
+                log_new_start = tile.set_new_start(robot, self)
+                if log_flag:
+                    log_effects.append(log_flag)
+                if log_new_start:
+                    log_effects.append(log_new_start)
 
         return log_effects
 
