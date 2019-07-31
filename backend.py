@@ -108,7 +108,7 @@ class Robot:
                         # Check that robot moved.
                         if robot_in_the_way.coordinates == next_coordinates:
                             break
-                        log_move.append(log_push)
+                        log_move.extend(log_push)
                     else:
                         break
 
@@ -120,6 +120,7 @@ class Robot:
                 # If robot falls into hole, he becomes inactive.
                 if self.inactive:
                     break
+        # print('Pohyb:', log_move)
         return log_move
 
     def move(self, direction, distance, state):
@@ -146,7 +147,8 @@ class Robot:
         """
         log = []
         self.direction = self.direction.get_new_direction(where_to)
-        return log.append({'Rotate': {self.name: where_to.value}})
+        log.append({'Rotate': {self.name: where_to.value}})
+        return log
 
     def fall_into_hole(self, state):
         """
@@ -273,7 +275,9 @@ class MovementCard(Card):
         """
         Card calls robot's method walk.
         """
-        return robot.walk(self.distance, state)
+        log = robot.walk(self.distance, state)
+        print(self, log)
+        return log
 
     def as_dict(self):
         """
@@ -317,7 +321,9 @@ class RotationCard(Card):
         """
         Card calls robot's method rotate.
         """
-        return robot.rotate(self.rotation)
+        log = robot.rotate(self.rotation)
+        print(self, log)
+        return log
 
     def as_dict(self):
         """
@@ -538,20 +544,21 @@ class State:
         The method name is not entirely exact: the whole register phase actions
         take place (both tiles and robot's effects).
         """
+        log_effects = []
         # Activate belts
         self.move_belts()
 
         # Activate pusher
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.push_robot(robot, self, register)
+                log_effects.append(tile.push_robot(robot, self, register))
                 if robot.inactive:
                     break
 
         # Activate gear
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.rotate_robot(robot)
+                log_effects.append(tile.rotate_robot(robot))
 
         # Activate laser
         for robot in self.get_active_robots():
@@ -569,6 +576,8 @@ class State:
             for tile in self.get_tiles(robot.coordinates):
                 tile.collect_flag(robot)
                 tile.set_new_start(robot, self)
+
+        return log_effects
 
     def set_robots_for_new_turn(self):
         """
@@ -608,10 +617,11 @@ class State:
         For the given register sort the robot's list according to card's priorities.
         Apply cards effects on the sorted robots.
         """
-        log = []
+        log_cards = []
         robot_cards = self.get_robots_ordered_by_cards_priority(register)
         for robot, card in robot_cards:
-            log.append(card.apply_effect(robot, self))
+            log_cards.append(card.apply_effect(robot, self))
+        log = {'register_number': register, 'cards': log_cards}
         return log
 
     def apply_all_effects(self, registers=5):
@@ -625,7 +635,7 @@ class State:
 
         # After last register ressurect the robots to their starting coordinates.
         self.set_robots_for_new_turn()
-        return log
+        print('Výstup:', log)
 
     def _apply_cards_and_tiles_effects(self, registers):
         """
@@ -644,8 +654,8 @@ class State:
                 print("No card on hand, continue to tile effects.")
                 pass
 
-            self.apply_tile_effects(register)
-        print(log)
+            log.append(self.apply_tile_effects(register))
+        return log
 
     def create_card_pack(self):
         """

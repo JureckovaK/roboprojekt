@@ -161,13 +161,13 @@ class BeltTile(Tile):
         # on south part of tile.
         if self.direction_out == Rotation.U_TURN:
             if self.direction.get_new_direction(Rotation.RIGHT) == direction:
-                robot.rotate(Rotation.RIGHT)
+                return robot.rotate(Rotation.RIGHT)
             else:
-                robot.rotate(Rotation.LEFT)
+                return robot.rotate(Rotation.LEFT)
         # All other rotating belts or crossroads.
         elif isinstance(self.direction_out, Rotation):
                 if direction == self.direction:
-                    robot.rotate(self.direction_out)
+                    return robot.rotate(self.direction_out)
 
 
 class PusherTile(Tile):
@@ -181,7 +181,7 @@ class PusherTile(Tile):
         #  0 for even register number,
         #  1 for odd register number.
         if (register + 1) % 2 == self.register:
-            robot.move(self.direction.get_new_direction(Rotation.U_TURN), 1, state)
+            return robot.move(self.direction.get_new_direction(Rotation.U_TURN), 1, state)
 
 
 class GearTile(Tile):
@@ -191,7 +191,7 @@ class GearTile(Tile):
 
     def rotate_robot(self, robot):
         # Rotate robot by 90° according to GearTile property: left or right.
-        robot.rotate(self.move_direction)
+        return robot.rotate(self.move_direction)
 
 
 class LaserTile(Tile):
