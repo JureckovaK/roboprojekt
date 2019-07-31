@@ -115,8 +115,10 @@ class Robot:
                 # Robot walks to next coordinates.
                 self.coordinates = next_coordinates
                 # Check hole on next coordinates.
-                self.fall_into_hole(state)
-                log_move.append({'Move': {self.name: direction.coor_delta}})
+                log_hole = self.fall_into_hole(state)
+                log_move.append({self.name: direction.coor_delta})
+                if log_hole:
+                    log_move.append(log_hole)
                 # If robot falls into hole, he becomes inactive.
                 if self.inactive:
                     break
@@ -140,15 +142,14 @@ class Robot:
         """
         self.lives -= 1
         self.coordinates = None
+        return {'death': True}
 
     def rotate(self, where_to):
         """
         Rotate robot according to a given direction.
         """
-        log = []
         self.direction = self.direction.get_new_direction(where_to)
-        log.append({'Rotate': {self.name: where_to.value}})
-        return log
+        return {self.name: where_to.value}
 
     def fall_into_hole(self, state):
         """
@@ -207,7 +208,7 @@ class Robot:
             self.damages += strength
         else:
             # Robot is damaged so much that laser kills it.
-            self.die()
+            return self.die()
 
     def clear_robot_attributes(self):
         """
@@ -277,7 +278,7 @@ class MovementCard(Card):
         """
         log = robot.walk(self.distance, state)
         print(self, log)
-        return log
+        return {'MovementCard': log}
 
     def as_dict(self):
         """
@@ -323,7 +324,7 @@ class RotationCard(Card):
         """
         log = robot.rotate(self.rotation)
         print(self, log)
-        return log
+        return {'RotationCard': log}
 
     def as_dict(self):
         """
@@ -545,8 +546,11 @@ class State:
         take place (both tiles and robot's effects).
         """
         log_effects = []
+
         # Activate belts
-        self.move_belts()
+        log_belts = self.move_belts()
+        if log_belts:
+            log_effects.append(log_belts)
 
         # Activate pusher
         for robot in self.get_active_robots():
@@ -647,7 +651,7 @@ class State:
 
         # After last register ressurect the robots to their starting coordinates.
         self.set_robots_for_new_turn()
-        print('Výstup:', log)
+        print('output:', log)
 
     def _apply_cards_and_tiles_effects(self, registers):
         """
