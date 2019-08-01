@@ -122,7 +122,6 @@ class Robot:
                 # If robot falls into hole, he becomes inactive.
                 if self.inactive:
                     break
-        # print('Pohyb:', log_move)
         return log_move
 
     def move(self, direction, distance, state):
@@ -277,7 +276,6 @@ class MovementCard(Card):
         Card calls robot's method walk.
         """
         log = robot.walk(self.distance, state)
-        print(self, log)
         return {'MovementCard': log}
 
     def as_dict(self):
@@ -323,7 +321,6 @@ class RotationCard(Card):
         Card calls robot's method rotate.
         """
         log = robot.rotate(self.rotation)
-        print(self, log)
         return {'RotationCard': log}
 
     def as_dict(self):
@@ -555,9 +552,9 @@ class State:
         # Activate pusher
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                log_push = tile.push_robot(robot, self, register)
-                if log_push:
-                    log_effects.append(log_push)
+                log_pusher = tile.push_robot(robot, self, register)
+                if log_pusher:
+                    log_effects.append(log_pusher)
                 if robot.inactive:
                     break
 
@@ -637,8 +634,7 @@ class State:
         robot_cards = self.get_robots_ordered_by_cards_priority(register)
         for robot, card in robot_cards:
             log_cards.append(card.apply_effect(robot, self))
-        log = {'register_number': register, 'cards': log_cards}
-        return log
+        return log_cards
 
     def apply_all_effects(self, registers=5):
         """
@@ -650,27 +646,30 @@ class State:
         log = self._apply_cards_and_tiles_effects(registers)
 
         # After last register ressurect the robots to their starting coordinates.
-        self.set_robots_for_new_turn()
-        print('output:', log)
+        log["clean_up"] = self.set_robots_for_new_turn()
+        game_log = {"game_log": log}
+        print('OUTPUT:', game_log)
+        return game_log
 
     def _apply_cards_and_tiles_effects(self, registers):
         """
         Private method without ressurect mode - for testing purposes.
         It is called within apply_all_effects. Do not call it separately.
         """
-        log = []
+        log = {}
         for register in range(registers):
             # try -  except was introduced for devel purposes - it may happen that
             # robots have no card on hand and we still want to try loading the game
             try:
                 # Check the card's priority
-                log.append(self.apply_register(register))
+                log_cards = self.apply_register(register)
 
             except NoCardError:
                 print("No card on hand, continue to tile effects.")
                 pass
 
-            log.append(self.apply_tile_effects(register))
+            log_tile_effects = self.apply_tile_effects(register)
+            log[register] = {"cards": log_cards, "tile_effects": log_tile_effects}
         return log
 
     def create_card_pack(self):
