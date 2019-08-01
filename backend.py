@@ -487,7 +487,10 @@ class State:
         # According to rules:
         # First, express belts move robots by one tile (express attribute is set to True).
         # Then all belts move robots by one tile (express attribute is set to False).
+        log_belts = {}
         for express_belts in True, False:
+            log_belt_move = []
+            log_belt_rotate = []
             # Get robots next coordinates after move of conveyor belts
             robots_next_coordinates = self.get_next_coordinates_for_belts(express_belts)
             # Solve blocked robots (colliding and swapping robots)
@@ -509,10 +512,18 @@ class State:
                         robot.coordinates,
                         robots_next_coordinates[robot]
                     )
+                    log_belt_move.append({robot.name: direction.coor_delta})
                     # Check if the next tile is rotating belt.
                     for tile in self.get_tiles(robots_next_coordinates[robot]):
-                        tile.rotate_robot_on_belt(robot, direction)
+                        log_rotate = tile.rotate_robot_on_belt(robot, direction)
+                        if log_rotate:
+                            log_belt_rotate.append(log_rotate)
                 robot.coordinates = robots_next_coordinates[robot]
+            if express_belts and (log_belt_move or log_belt_rotate):
+                log_belts["express_belts"] = {"move": log_belt_move, "rotate": log_belt_rotate}
+            elif log_belt_move or log_belt_rotate:
+                log_belts["all_belts"] = {"move": log_belt_move, "rotate": log_belt_rotate}
+        return log_belts
 
     def get_next_coordinates_for_belts(self, express_belts):
         """

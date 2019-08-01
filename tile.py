@@ -161,16 +161,13 @@ class BeltTile(Tile):
         # on south part of tile.
         if self.direction_out == Rotation.U_TURN:
             if self.direction.get_new_direction(Rotation.RIGHT) == direction:
-                log = robot.rotate(Rotation.RIGHT)
-                return {'belt_rotate': log}
+                return robot.rotate(Rotation.RIGHT)
             else:
-                log = robot.rotate(Rotation.LEFT)
-                return {'belt_rotate': log}
+                return robot.rotate(Rotation.LEFT)
         # All other rotating belts or crossroads.
         elif isinstance(self.direction_out, Rotation):
                 if direction == self.direction:
-                    log = robot.rotate(self.direction_out)
-                    return {'belt_rotate': log}
+                    return robot.rotate(self.direction_out)
 
 
 class PusherTile(Tile):
