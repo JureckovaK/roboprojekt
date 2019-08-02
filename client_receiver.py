@@ -34,7 +34,8 @@ class Receiver:
                             self.window.push_handlers(on_draw=self.window_draw)
                     if "robots" in message:
                         self.state.robots = self.state.robots_from_dict(message)
-
+                    if "game_log" in message:
+                        self.state.robots = self.state.robots_from_dict(message["game_log"])
 
 def tick_asyncio(dt):
     """

@@ -9,6 +9,7 @@ client_interface.py in another command line.
 """
 import sys
 import contextlib
+import asyncio
 
 from aiohttp import web
 
@@ -165,7 +166,8 @@ class Server:
         """
         all_selected = self.state.all_selected()
         if all_selected:
-            self.state.apply_all_effects()
+            game_log = self.state.apply_all_effects()
+            await self.replay_game_round(game_log)
             self.state.increment_game_round()
 
             for robot in self.state.robots:
@@ -173,6 +175,14 @@ class Server:
                 robot.dealt_cards = self.state.get_dealt_cards(robot)
                 ws = self.assigned_robots[robot.name]
                 await ws.send_json(self.state.cards_and_game_round_as_dict(robot.dealt_cards))
+
+    async def replay_game_round(self, game_log):
+
+        for register, log in game_log.items():
+            log_to_send = {"game_log": log}
+            for client in self.ws_receivers:
+                await client.send_json(log_to_send)
+                await asyncio.sleep(1)
 
 
 # aiohttp.web application

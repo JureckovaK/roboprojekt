@@ -654,12 +654,14 @@ class State:
         At the end ressurect the inactive robots to their starting coordinates.
         registers: default iterations count is 5, can be changed for testing purposes.
         """
-        log = self._apply_cards_and_tiles_effects(registers)
+        game_log = self._apply_cards_and_tiles_effects(registers)
 
         # After last register ressurect the robots to their starting coordinates.
-        log["clean_up"] = self.set_robots_for_new_turn()
-        game_log = {"game_log": log}
+        self.set_robots_for_new_turn()
+
+        # game_log["clean_up"] = self.set_robots_for_new_turn()
         print('OUTPUT:', game_log)
+
         return game_log
 
     def _apply_cards_and_tiles_effects(self, registers):
@@ -680,7 +682,11 @@ class State:
                 pass
 
             log_tile_effects = self.apply_tile_effects(register)
-            log[register] = {"cards": log_cards, "tile_effects": log_tile_effects}
+            log[register] = {
+                "cards": log_cards,
+                "tile_effects": log_tile_effects,
+                **self.robots_as_dict(),
+                }
         return log
 
     def create_card_pack(self):
