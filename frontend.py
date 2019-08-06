@@ -52,11 +52,13 @@ def load_robots(state):
     state: State object containing game board and robots
     """
     robot_sprites = []
+    named_robot_sprites = {}
     # Only active robots will be drawn.
     for robot in state.get_active_robots():
         robot_sprite = create_robot_sprite(robot)
+        named_robot_sprites[robot.name] = robot_sprite
         robot_sprites.append(robot_sprite)
-    return robot_sprites
+    return robot_sprites, named_robot_sprites
 
 
 def create_tile_sprites(coordinate, tiles):
@@ -99,15 +101,16 @@ def create_robot_sprite(robot):
     return robot_sprite
 
 
-def draw_state(state, window):
+def draw_state(state, window, game_log=[]):
     """
     Draw the images of tiles and robots into map, react to user's resizing of window by scaling the board.
 
     state: State object containing game board, robots and map sizes
     """
     tile_sprites = load_tiles(state)
-    robot_sprites = load_robots(state)
-    tile_sprites.extend(robot_sprites)
+    if not game_log:
+        robot_sprites, named_robot_sprites = load_robots(state)
+        tile_sprites.extend(robot_sprites)
 
     # Scaling
     pyglet.gl.glPushMatrix()
@@ -122,5 +125,25 @@ def draw_state(state, window):
 
     for tile_sprite in tile_sprites:
         tile_sprite.draw()
+    if game_log:
+        draw_robots(state, game_log)
 
     pyglet.gl.glPopMatrix()
+
+
+def draw_robots(state, game_log):
+    robot_sprites, named_robot_sprites = load_robots(state)
+    if game_log["cards"]:
+        for card in game_log["cards"]:
+            if "MovementCard" in card:
+                moves = card["MovementCard"]
+                for move in moves:
+                    for robot_name, coor_delta in move.items():
+                        robot_sprite = named_robot_sprites[robot_name]
+                        x, y = tuple(coor_delta)
+                        step_x = x/100
+                        step_y = y/100
+                        for _ in range(1, 100):
+                            robot_sprite.x = robot_sprite.x + step_x
+                            robot_sprite.y = robot_sprite.y + step_y
+                            robot_sprite.draw()

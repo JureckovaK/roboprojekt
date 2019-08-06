@@ -14,12 +14,12 @@ class Receiver:
         self.window = None
         self.state = None
 
-    def window_draw(self):
+    def window_draw(self, game_log=[]):
         """
         Draw the game state (board and robots).
         """
         self.window.clear()
-        draw_state(self.state, self.window)
+        draw_state(self.state, self.window, game_log)
 
     async def get_game_state(self):
         async with aiohttp.ClientSession() as session:
@@ -36,6 +36,7 @@ class Receiver:
                         self.state.robots = self.state.robots_from_dict(message)
                     if "game_log" in message:
                         self.state.robots = self.state.robots_from_dict(message["game_log"])
+                        self.window.push_handlers(on_draw=self.window_draw(message["game_log"]))
 
 def tick_asyncio(dt):
     """
