@@ -146,6 +146,7 @@ class Robot:
             direction - Default value is set to robot's direction.
         When robot walks, he can move other robots in the way.
         """
+        log_walk = []
         if direction is None:
             direction = self.direction
 
@@ -183,6 +184,8 @@ class Robot:
                 # If robot falls into hole, he becomes inactive.
                 if self.inactive:
                     break
+                log_walk.append(state.robots_as_dict())
+        return log_walk
 
     def move(self, direction, distance, state):
         """
@@ -207,11 +210,12 @@ class Robot:
 
         self.coordinates = None
 
-    def rotate(self, where_to):
+    def rotate(self, where_to, state):
         """
         Rotate robot according to a given direction.
         """
         self.direction = self.direction.get_new_direction(where_to)
+        return [state.robots_as_dict()]
 
     def fall_into_hole(self, state):
         """
@@ -358,7 +362,7 @@ class MovementCard(Card):
         """
         Card calls robot's method walk.
         """
-        robot.walk(self.distance, state)
+        return robot.walk(self.distance, state)
 
     def as_dict(self):
         """
@@ -402,7 +406,7 @@ class RotationCard(Card):
         """
         Card calls robot's method rotate.
         """
-        robot.rotate(self.rotation)
+        return robot.rotate(self.rotation, state)
 
     def as_dict(self):
         """
@@ -597,7 +601,7 @@ class State:
                     )
                     # Check if the next tile is rotating belt.
                     for tile in self.get_tiles(robots_next_coordinates[robot]):
-                        tile.rotate_robot_on_belt(robot, direction)
+                        tile.rotate_robot_on_belt(robot, direction, self)
                 robot.coordinates = robots_next_coordinates[robot]
                 robot.fall_into_hole(self)
 
@@ -697,10 +701,12 @@ class State:
         For the given register sort the robot's list according to card's priorities.
         Apply cards effects on the sorted robots.
         """
+        register_log = []
         robot_cards = self.get_robots_ordered_by_cards_priority(register)
         for robot, card in robot_cards:
             if not robot.inactive:
-                card.apply_effect(robot, self)
+                register_log.extend(card.apply_effect(robot, self))
+        return register_log
 
     def apply_all_effects(self, registers=5):
         """
@@ -709,12 +715,13 @@ class State:
         At the end ressurect the inactive robots to their starting coordinates.
         registers: default iterations count is 5, can be changed for testing purposes.
         """
+        log = {register: {} for register in range(registers)}
         for register in range(registers):
             # try -  except was introduced for devel purposes - it may happen that
             # robots have no card on hand and we still want to try loading the game
             try:
                 # Check the card's priority
-                self.apply_register(register)
+                log[register] = {"cards": self.apply_register(register)}
 
             except NoCardError:
                 print("No card on hand, continue to tile effects.")
@@ -724,6 +731,8 @@ class State:
 
         # After last register ressurect the robots to their starting coordinates.
         self.set_robots_for_new_turn()
+        print(log)
+        return log
 
     def play_round(self):
         """
@@ -736,12 +745,13 @@ class State:
             robot.select_cards(self)
             if robot.power_down:
                 robot.damages = 0
-        self.apply_all_effects()
+        log = self.apply_all_effects()
         self.check_winner()
         self.game_round += 1
         for robot in self.robots:
             robot.clear_robot_attributes(self)
             self.deal_cards(robot)
+        return log
 
     def create_card_pack(self):
         """

@@ -64,7 +64,7 @@ class Tile:
         """
         return False
 
-    def rotate_robot_on_belt(self, robot, direction):
+    def rotate_robot_on_belt(self, robot, direction, state):
         """
         Rotate robot on rotating conveyor belts. If robot's rotated,
         will be decided by the direction he entered a tile.
@@ -164,19 +164,19 @@ class BeltTile(Tile):
         else:
             return False
 
-    def rotate_robot_on_belt(self, robot, direction):
+    def rotate_robot_on_belt(self, robot, direction, state):
         # Special condition for one type of crossroads:
         # If crossroads have Direction.N, then the special type has exit
         # on south part of tile.
         if self.direction_out == Rotation.U_TURN:
             if self.direction.get_new_direction(Rotation.RIGHT) == direction:
-                robot.rotate(Rotation.RIGHT)
+                robot.rotate(Rotation.RIGHT, state)
             else:
-                robot.rotate(Rotation.LEFT)
+                robot.rotate(Rotation.LEFT, state)
         # All other rotating belts or crossroads.
         elif isinstance(self.direction_out, Rotation):
                 if direction == self.direction:
-                    robot.rotate(self.direction_out)
+                    robot.rotate(self.direction_out, state)
 
 
 class PusherTile(Tile):

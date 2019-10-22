@@ -159,7 +159,12 @@ class Server:
         Contain methods play_round, send_message(robots_as_dict),
         send_new_dealt_card.
         """
-        self.state.play_round()
+        game_log = self.state.play_round()
+        for register in range(5):
+            cards_log = game_log[register]["cards"]
+            for card_log in cards_log:
+                await self.send_message(card_log)
+                await asyncio.sleep(1)
         if self.state.winners:
             await self.send_message({"winner": self.state.winners})
         await self.send_message("round_over")
