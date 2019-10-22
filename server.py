@@ -161,9 +161,9 @@ class Server:
         """
         game_log = self.state.play_round()
         for register in range(5):
-            cards_log = game_log[register]["cards"]
-            for card_log in cards_log:
-                await self.send_message(card_log)
+            register_log = game_log[register]["cards"] + game_log[register]["tile_effects"]
+            for log in register_log:
+                await self.send_message(log)
                 await asyncio.sleep(1)
         if self.state.winners:
             await self.send_message({"winner": self.state.winners})

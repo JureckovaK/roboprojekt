@@ -574,6 +574,7 @@ class State:
         """
         Move robots on conveyor belts.
         """
+        belts_log = []
         # According to rules:
         # First, express belts move robots by one tile (express attribute is set to True).
         # Then all belts move robots by one tile (express attribute is set to False).
@@ -604,6 +605,8 @@ class State:
                         tile.rotate_robot_on_belt(robot, direction, self)
                 robot.coordinates = robots_next_coordinates[robot]
                 robot.fall_into_hole(self)
+            belts_log.append(self.robots_as_dict())
+        return belts_log
 
     def get_next_coordinates_for_belts(self, express_belts):
         """
@@ -633,8 +636,10 @@ class State:
         The method name is not entirely exact: the whole register phase actions
         take place (both tiles and robot's effects).
         """
+        effects_log = []
+
         # Activate belts
-        self.move_belts()
+        effects_log.extend(self.move_belts())
 
         # Activate pusher
         for robot in self.get_active_robots():
@@ -642,11 +647,13 @@ class State:
                 tile.push_robot(robot, self, register)
                 if robot.inactive:
                     break
+        effects_log.append(self.robots_as_dict())
 
         # Activate gear
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
                 tile.rotate_robot(robot)
+        effects_log.append(self.robots_as_dict())
 
         # Activate laser
         for robot in self.get_active_robots():
@@ -654,16 +661,21 @@ class State:
                 tile.shoot_robot(robot, self)
                 if robot.inactive:
                     break
+        effects_log.append(self.robots_as_dict())
 
         # Activate robot laser
         for robot in self.get_active_robots():
             robot.shoot(self)
+        effects_log.append(self.robots_as_dict())
 
         # Collect flags, repair robots
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
                 tile.collect_flag(robot)
                 tile.set_new_start(robot, self)
+        effects_log.append(self.robots_as_dict())
+
+        return effects_log
 
     def set_robots_for_new_turn(self):
         """
@@ -727,11 +739,10 @@ class State:
                 print("No card on hand, continue to tile effects.")
                 pass
 
-            self.apply_tile_effects(register)
+            log[register].update({"tile_effects": self.apply_tile_effects(register)})
 
         # After last register ressurect the robots to their starting coordinates.
         self.set_robots_for_new_turn()
-        print(log)
         return log
 
     def play_round(self):
