@@ -97,7 +97,10 @@ class Robot:
         """
         robot_description = robot_description["robot_data"]
         direction = Direction(robot_description["direction"])
-        coordinates = tuple(robot_description["coordinates"])
+        if robot_description["coordinates"] == None:
+            coordinates = None
+        else:
+            coordinates = tuple(robot_description["coordinates"])
         name = robot_description["name"]
         robot = cls(direction, coordinates, name)
         robot.lives = robot_description["lives"]
@@ -723,6 +726,7 @@ class State:
             if robot.inactive:
                 robot.coordinates = robot.start_coordinates
                 robot.damages = 0
+                self.record_log()
 
     def get_robots_ordered_by_cards_priority(self, register):
         """
