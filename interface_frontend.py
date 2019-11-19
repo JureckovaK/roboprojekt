@@ -2,7 +2,7 @@ import pyglet
 from pathlib import Path
 from time import monotonic
 
-from util_frontend import TILE_WIDTH, TILE_HEIGHT, get_label
+from util_frontend import TILE_WIDTH, TILE_HEIGHT, get_label, get_sprite, window_zoom
 
 
 MAX_LIVES_COUNT = 3
@@ -10,9 +10,11 @@ MAX_FLAGS_COUNT = 8
 MAX_DAMAGES_COUNT = 9
 WINDOW_WIDTH = 768
 WINDOW_HEIGHT = 1024
+# Gap between other robots pictures
+GAP = 98
 
 
-def create_window(on_draw, on_text, on_mouse_press):
+def create_window(on_draw, on_text, on_mouse_press, on_close):
     """
     Return a pyglet window for graphic output.
     """
@@ -21,13 +23,9 @@ def create_window(on_draw, on_text, on_mouse_press):
         on_draw=on_draw,
         on_text=on_text,
         on_mouse_press=on_mouse_press,
+        on_close=on_close,
     )
     return window
-
-
-def get_sprite(img_path, x=0, y=0):
-    img = pyglet.image.load(img_path)
-    return pyglet.sprite.Sprite(img, x, y)
 
 
 # Interface element sprites
@@ -186,192 +184,188 @@ def draw_interface(interface_state, game_state, winner_time, window):
     Draw the images of given interface,
     react to user's resizing of window by scaling the interface.
     """
-    pyglet.gl.glPushMatrix()
-    window.clear()
-    zoom = min(
-        window.height / WINDOW_HEIGHT,
-        window.width / WINDOW_WIDTH
-    )
-    pyglet.gl.glScalef(zoom, zoom, 1)
+    with window_zoom(window, WINDOW_WIDTH, WINDOW_HEIGHT):
+        # Interface background
+        interface_sprite.draw()
 
-    # Interface background
-    interface_sprite.draw()
-
-    # CARDS
-    # Dealt cards
-    for coordinate, card in zip(
-            dealt_cards_coordinates,
-            interface_state.dealt_cards,
-            ):
-        draw_card(coordinate, card)
-
-    if game_state is not None:
-        players = []
-        for robot in game_state.robots:
-            if interface_state.robot and interface_state.robot.name != robot.name:
-                players.append(robot)
-
-        # Other robots background
-        for i, player_background in enumerate(players):
-            players_background.x = 50 + i * 98
-            players_background.y = 50
-            players_background.draw()
-
-        # Other robots and their attributes
-        for i, robot in enumerate(players):
-            draw_robot(i, robot, game_state)
-
-        # Flag slot
-        for i in range(game_state.flag_count):
-            flag_slot_sprite.x = 341 + i * 48
-            flag_slot_sprite.y = 933
-            flag_slot_sprite.draw()
-
-        # Game over
-        if interface_state.robot is None:
-            game_over_sprite.draw()
-
-    # Cards on hand
-    for coordinate, card_index in zip(program_coordinates, interface_state.program):
-        if card_index is not None:
-            draw_card(coordinate, interface_state.dealt_cards[card_index])
-
-    # Blocked cards
-    if interface_state.blocked_cards:
-        blocked_cards_coordinates = program_coordinates[-(len(interface_state.blocked_cards)):]
-
-        for coordinate, card in zip(blocked_cards_coordinates, interface_state.blocked_cards):
+        # CARDS
+        # Dealt cards
+        for coordinate, card in zip(
+                dealt_cards_coordinates,
+                interface_state.dealt_cards,
+                ):
             draw_card(coordinate, card)
 
-    # Selected cards
-    # if card is selected, selected card in dealt cards is gray
-    for card_index in interface_state.program:
-        if card_index is not None:
-            card = interface_state.dealt_cards[card_index]
-            x, y = dealt_cards_coordinates[interface_state.dealt_cards.index(card)]
-            select_sprite.x = x
-            select_sprite.y = y
-            select_sprite.draw()
+        if game_state is not None:
+            players = []
+            for robot in game_state.robots:
+                if interface_state.robot and interface_state.robot.name != robot.name:
+                    players.append(robot)
 
-    # Cursor
-    x, y = program_coordinates[interface_state.cursor_index]
-    cursor_sprite.x = x
-    cursor_sprite.y = y
-    cursor_sprite.draw()
+            # Other robots background
+            for i, player_background in enumerate(players):
+                players_background.x = 50 + i * 98
+                players_background.y = 50
+                players_background.draw()
 
-    # Power Down
-    if interface_state.power_down:
-        power_down_sprite.draw()
+            # Other robots and their attributes
+            for i, robot in enumerate(players):
+                draw_robot(i, robot, game_state)
 
-    # Timer
-    if interface_state.timer is not None:
-        seconds = monotonic() - interface_state.timer
-        seconds_left = round(30-seconds)
-        timer_label = get_label(
-            # format'02' means that number has always 2 digits, 
-            # shorter is filled with '0' before it.
-            f"00:{seconds_left:02}",
-            x=585,
-            y=865,
-            font_size=26,
-            anchor_x="center",
-            color=(255, 0, 0, 255),
-        )
-        timer_label.draw()
+            # Flag slot
+            for i in range(game_state.flag_count):
+                flag_slot_sprite.x = 341 + i * 48
+                flag_slot_sprite.y = 933
+                flag_slot_sprite.draw()
 
-    # Indicator
-    if not interface_state.selection_confirmed:
-        indicator_green_sprite.draw()
-    else:
-        indicator_red_sprite.draw()
+            # Game over
+            if interface_state.robot is None:
+                game_over_sprite.draw()
 
-    if interface_state.robot:
-        # Robot
-        my_robot_sprite.image = loaded_robots_images[interface_state.robot.name]
-        my_robot_sprite.draw()
+        # Cards on hand
+        for coordinate, card_index in zip(program_coordinates, interface_state.program):
+            if card_index is not None:
+                draw_card(coordinate, interface_state.dealt_cards[card_index])
 
-        robot_name = get_label(
-            interface_state.robot.displayed_name,
-            x=250,
-            y=862,
-            font_size=20,
-            anchor_x="center",
-            color=(0, 0, 0, 255),
-        )
-        robot_name.draw()
+        # Blocked cards
+        if interface_state.blocked_cards:
+            blocked_cards_coordinates = program_coordinates[-(len(interface_state.blocked_cards)):]
 
-        # Flags
-        for sprite in flags_sprites[0:interface_state.robot.flags]:
-            sprite.draw()
+            for coordinate, card in zip(blocked_cards_coordinates, interface_state.blocked_cards):
+                draw_card(coordinate, card)
 
-        # Robot lives
-        for sprite in lives_sprites[0:interface_state.robot.lives]:
-            sprite.draw()
+        # Selected cards
+        # if card is selected, selected card in dealt cards is gray
+        for card_index in interface_state.program:
+            if card_index is not None:
+                card = interface_state.dealt_cards[card_index]
+                x, y = dealt_cards_coordinates[interface_state.dealt_cards.index(card)]
+                select_sprite.x = x
+                select_sprite.y = y
+                select_sprite.draw()
 
-        # Damage Tokens
-        damages = interface_state.robot.damages + interface_state.robot.permanent_damages
-        for sprite in damages_tokens_sprites[0:damages]:
-            sprite.draw()
+        # Cursor
+        x, y = program_coordinates[interface_state.cursor_index]
+        cursor_sprite.x = x
+        cursor_sprite.y = y
+        cursor_sprite.draw()
 
-        for sprite in permanent_damages_sprites[0:interface_state.robot.permanent_damages]:
-            sprite.draw()
+        # Power Down
+        if interface_state.power_down:
+            power_down_sprite.draw()
 
-        # Winner
-        if game_state.winners:
-            # An announcement of winner is drawn for 5 sec from time,
-            # when client received message about winner.
-            # Winner crown is drawn for the rest of the game.
-            if interface_state.robot.winner:
-                crown = crown_sprite
-            else:
-                crown = loss_sprite
-            crown.x = 120
-            crown.y = 945
-            crown.draw()
+        # Timer
+        if interface_state.timer is not None:
+            seconds = monotonic() - interface_state.timer
+            seconds_left = round(30-seconds)
+            timer_label = get_label(
+                # format'02' means that number has always 2 digits,
+                # shorter is filled with '0' before it.
+                f"00:{seconds_left:02}",
+                x=585,
+                y=865,
+                font_size=26,
+                anchor_x="center",
+                color=(255, 0, 0, 255),
+            )
+            timer_label.draw()
 
-            seconds = 5 - (monotonic() - winner_time)
-            if (0 < seconds < 5):
+        # Indicator
+        if not interface_state.selection_confirmed:
+            indicator_green_sprite.draw()
+        else:
+            indicator_red_sprite.draw()
+
+        if interface_state.robot:
+            # Robot
+            my_robot_sprite.image = loaded_robots_images[interface_state.robot.name]
+            my_robot_sprite.draw()
+
+            robot_name = get_label(
+                interface_state.robot.displayed_name,
+                x=250,
+                y=862,
+                font_size=20,
+                anchor_x="center",
+                color=(0, 0, 0, 255),
+            )
+            robot_name.draw()
+
+            # Flags
+            for sprite in flags_sprites[0:interface_state.robot.flags]:
+                sprite.draw()
+
+            # Robot lives
+            for sprite in lives_sprites[0:interface_state.robot.lives]:
+                sprite.draw()
+
+            # Damage Tokens
+            damages = interface_state.robot.damages + interface_state.robot.permanent_damages
+            for sprite in damages_tokens_sprites[0:damages]:
+                sprite.draw()
+
+            for sprite in permanent_damages_sprites[0:interface_state.robot.permanent_damages]:
+                sprite.draw()
+
+            # Winner
+            if game_state.winners:
+                # An announcement of winner is drawn for 5 sec from time,
+                # when client received message about winner.
+                # Winner crown is drawn for the rest of the game.
                 if interface_state.robot.winner:
-                    announcement = you_win_sprite
-                    announcement.draw()
+                    crown = crown_sprite
                 else:
-                    announcement = winner_of_the_game_sprite
-                    announcement.draw()
-                    for i, name in enumerate(game_state.winners):
-                        winner_label = get_label(
-                            str(name),
-                            x=(game_state.tile_count[0] * TILE_WIDTH) / 2 - 50,
-                            y=(game_state.tile_count[1] * TILE_HEIGHT) / 2 - i * 50,
-                            font_size=26,
-                            anchor_x="center",
-                            color=(255, 0, 0, 255),
-                        )
-                        winner_label.draw()
+                    crown = loss_sprite
+                crown.x = 120
+                crown.y = 945
+                crown.draw()
 
-    pyglet.gl.glPopMatrix()
+                seconds = 5 - (monotonic() - winner_time)
+                if (0 < seconds < 5):
+                    if interface_state.robot.winner:
+                        announcement = you_win_sprite
+                        announcement.draw()
+                    else:
+                        announcement = winner_of_the_game_sprite
+                        announcement.draw()
+                        for i, name in enumerate(game_state.winners):
+                            winner_label = get_label(
+                                str(name),
+                                x=(game_state.tile_count[0] * TILE_WIDTH) / 2 - 50,
+                                y=(game_state.tile_count[1] * TILE_HEIGHT) / 2 - i * 50,
+                                font_size=26,
+                                anchor_x="center",
+                                color=(255, 0, 0, 255),
+                            )
+                            winner_label.draw()
 
 
 def draw_robot(i, robot, game_state):
     """
     Draw robot and his attributes.
     """
+    # Robot's background
+    players_background.x = 50 + i * GAP
+    players_background.y = 50
+    players_background.draw()
+
     # Robot´s image
     if robot.name in loaded_robots_images:
         player_sprite.image = loaded_robots_images[robot.name]
-        player_sprite.x = 68 + i * 98
+        player_sprite.x = 66 + i * GAP
         player_sprite.y = 90
         player_sprite.draw()
 
     # Power_down
     if robot.power_down:
-        power_down_player_sprite.x = 82 + 98 * i
+        power_down_player_sprite.x = 80 + GAP * i
         power_down_player_sprite.y = 95
         power_down_player_sprite.draw()
 
     # Robot´flags
     flag_label = get_label(
         str(robot.flags),
-        x=132 + 100 * i,
+        x=132 + GAP * i,
         y=160,
         font_size=20,
         anchor_x="right",
@@ -382,7 +376,7 @@ def draw_robot(i, robot, game_state):
     # Robot´damages
     damage_label = get_label(
         str(robot.damages),
-        x=92 + 100 * i,
+        x=92 + GAP * i,
         y=56,
         font_size=20,
         anchor_x="right",
@@ -392,7 +386,7 @@ def draw_robot(i, robot, game_state):
 
     permanent_damage_label = get_label(
         str(robot.permanent_damages),
-        x=132 + 100 * i,
+        x=132 + GAP * i,
         y=56,
         font_size=20,
         anchor_x="right",
@@ -403,7 +397,7 @@ def draw_robot(i, robot, game_state):
     # Robot´lives
     life_label = get_label(
         str(robot.lives),
-        x=92 + 100 * i,
+        x=92 + GAP * i,
         y=160,
         font_size=20,
         anchor_x="right",
@@ -418,7 +412,7 @@ def draw_robot(i, robot, game_state):
         else:
             sprite = loss_sprite
 
-        sprite.x = 78 + i * 98
+        sprite.x = 78 + i * GAP
         sprite.y = 90
         sprite.draw()
 

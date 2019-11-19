@@ -1,7 +1,6 @@
 """
 Backend file contains functions for the game logic.
 """
-from pathlib import Path
 from collections import OrderedDict
 from random import shuffle
 import yaml
@@ -88,7 +87,8 @@ class Robot:
                  "start_coordinates": self.start_coordinates,
                  "selection_confirmed": self.selection_confirmed,
                  "unblocked_cards": self.unblocked_cards,
-                 "winner": self.winner }}
+                 "winner": self.winner,
+                 "displayed_name": self.displayed_name}}
 
     @classmethod
     def from_dict(cls, robot_description):
@@ -108,6 +108,7 @@ class Robot:
         robot.start_coordinates = robot_description["start_coordinates"]
         robot.selection_confirmed = robot_description["selection_confirmed"]
         robot.winner = robot_description["winner"]
+        robot.displayed_name = robot_description["displayed_name"]
         return robot
 
     def select_cards(self, state):
@@ -292,6 +293,26 @@ class Robot:
             self.program[index] = None
         self.selection_confirmed = False
         self.power_down = False
+
+    def freeze(self):
+        """
+        Switch on power down and confirm selection for robot.
+        """
+        self.power_down = True
+        self.selection_confirmed = True
+
+    def change_start_coordinates(self, state):
+        """
+        Check if the other robots have the same starting coordinates as
+        own current coordinates. If so, don't change the starting coordinates.
+        If there is no other robot with the same starting coordinates,
+        change the start coordinates to current ones.
+        """
+        for robot in state.robots:
+            if robot.start_coordinates == self.coordinates:
+                return
+        else:
+            self.start_coordinates = self.coordinates
 
     def select_blocked_cards_from_program(self):
         """
@@ -682,7 +703,7 @@ class State:
         active_new_start = False
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                if tile.collect_flag(robot):
+                if tile.collect_flag(robot, self):
                     active_flag = True
                 if tile.set_new_start(robot, self):
                     active_new_start = True
@@ -705,7 +726,6 @@ class State:
             if robot.inactive:
                 robot.coordinates = robot.start_coordinates
                 robot.damages = 0
-                robot.direction = Direction.N
 
     def get_robots_ordered_by_cards_priority(self, register):
         """
