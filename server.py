@@ -164,7 +164,7 @@ class Server:
             register_log = game_log[register]["cards"] + game_log[register]["tile_effects"]
             for log in register_log:
                 await self.send_message(log)
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
         if self.state.winners:
             await self.send_message({"winner": self.state.winners})
         await self.send_message("round_over")

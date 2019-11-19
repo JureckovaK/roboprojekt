@@ -603,9 +603,9 @@ class State:
                     # Check if the next tile is rotating belt.
                     for tile in self.get_tiles(robots_next_coordinates[robot]):
                         tile.rotate_robot_on_belt(robot, direction, self)
+                    belts_log.append(self.robots_as_dict())
                 robot.coordinates = robots_next_coordinates[robot]
                 robot.fall_into_hole(self)
-            belts_log.append(self.robots_as_dict())
         return belts_log
 
     def get_next_coordinates_for_belts(self, express_belts):
@@ -642,26 +642,35 @@ class State:
         effects_log.extend(self.move_belts())
 
         # Activate pusher
+        active_pusher = False
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.push_robot(robot, self, register)
+                if tile.push_robot(robot, self, register):
+                    active_pusher = True
                 if robot.inactive:
                     break
-        effects_log.append(self.robots_as_dict())
+        if active_pusher:
+            effects_log.append(self.robots_as_dict())
 
         # Activate gear
+        active_gear = False
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.rotate_robot(robot)
-        effects_log.append(self.robots_as_dict())
+                if tile.rotate_robot(robot, self):
+                    active_gear = True
+        if active_gear:
+            effects_log.append(self.robots_as_dict())
 
         # Activate laser
+        active_laser = False
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.shoot_robot(robot, self)
+                if tile.shoot_robot(robot, self):
+                    active_laser = True
                 if robot.inactive:
                     break
-        effects_log.append(self.robots_as_dict())
+        if active_laser:
+            effects_log.append(self.robots_as_dict())
 
         # Activate robot laser
         for robot in self.get_active_robots():
@@ -669,11 +678,16 @@ class State:
         effects_log.append(self.robots_as_dict())
 
         # Collect flags, repair robots
+        active_flag = False
+        active_new_start = False
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                tile.collect_flag(robot)
-                tile.set_new_start(robot, self)
-        effects_log.append(self.robots_as_dict())
+                if tile.collect_flag(robot):
+                    active_flag = True
+                if tile.set_new_start(robot, self):
+                    active_new_start = True
+        if active_flag or active_new_start:
+            effects_log.append(self.robots_as_dict())
 
         return effects_log
 
