@@ -47,7 +47,7 @@ class Tile:
         """
         return True
 
-    def kill_robot(self, robot):
+    def kill_robot(self, state, robot):
         """
         Take away one robot life, set him to inactive mode
         and set his coordinates to None.
@@ -140,10 +140,11 @@ class HoleTile(Tile):
     def __init__(self, direction=Direction.N, name=None, tile_type=None, properties={}):
         super().__init__(direction, name, tile_type, properties)
 
-    def kill_robot(self, robot):
+    def kill_robot(self, state, robot):
         # Call robot's method for dying.
-        return robot.die()
-
+        robot.die()
+        state.record_log()
+        return robot
 
 class BeltTile(Tile):
     def __init__(self, direction, name, tile_type, properties):
@@ -242,7 +243,7 @@ class LaserTile(Tile):
                 if tile.start:
                     # Don't check new tiles.
                     break
-        robot.be_damaged(self.laser_strength)
+        robot.be_damaged(state, self.laser_strength)
         return True
 
 
@@ -271,6 +272,7 @@ class RepairTile(Tile):
         # Remove one robot damage.
         if robot.damages > 0:
             robot.damages -= 1
+            state.record_log()
             return True
 
     def set_new_start(self, robot, state):

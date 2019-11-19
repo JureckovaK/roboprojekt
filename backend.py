@@ -147,7 +147,6 @@ class Robot:
             direction - Default value is set to robot's direction.
         When robot walks, he can move other robots in the way.
         """
-        log_walk = []
         if direction is None:
             direction = self.direction
 
@@ -185,8 +184,7 @@ class Robot:
                 # If robot falls into hole, he becomes inactive.
                 if self.inactive:
                     break
-                log_walk.append(state.robots_as_dict())
-        return log_walk
+                state.record_log()
 
     def move(self, direction, distance, state):
         """
@@ -224,7 +222,7 @@ class Robot:
         """
 
         for tile in state.get_tiles(self.coordinates):
-            tile.kill_robot(self)
+            tile.kill_robot(state, self)
             if self.inactive:
                 break
 
@@ -251,7 +249,7 @@ class Robot:
 
                     # There is a robot, shoot him and break the cycle (only one gets shot).
                     if robot_in_the_way:
-                        robot_in_the_way.be_damaged()
+                        robot_in_the_way.be_damaged(state)
                         break
 
                 # Check if there is a wall, if is: end of shot.
@@ -262,7 +260,7 @@ class Robot:
                 else:
                     next_coordinates = get_next_coordinates(next_coordinates, self.direction)
 
-    def be_damaged(self, strength=1):
+    def be_damaged(self, state, strength=1):
         """
         Give one or more damages to the robot.
         If the robot has reached the maximum damage value, he gets killed.
@@ -281,6 +279,7 @@ class Robot:
         else:
             # Robot is damaged so much that laser kills it.
             self.die()
+        state.record_log()
 
     def clear_robot_attributes(self, state):
         """
@@ -312,7 +311,9 @@ class Robot:
             if robot.start_coordinates == self.coordinates:
                 return
         else:
-            self.start_coordinates = self.coordinates
+            if self.start_coordinates != self.coordinates:
+                self.start_coordinates = self.coordinates
+                state.record_log()
 
     def select_blocked_cards_from_program(self):
         """
@@ -458,6 +459,7 @@ class State:
         self.game_round = 1
         self.winners = []
         self.flag_count = self.get_flag_count()
+        self.log = []
 
     def __repr__(self):
         return "<State {} {}>".format(self._board, self.robots)
@@ -495,6 +497,9 @@ class State:
         Return robots from state as dictionary for sending with server.
         """
         return {"robots": [robot.as_dict() for robot in self.robots]}
+
+    def record_log(self):
+        self.log.append(self.robots_as_dict())
 
     @classmethod
     def get_start_state(cls, map_name):
@@ -595,7 +600,6 @@ class State:
         """
         Move robots on conveyor belts.
         """
-        belts_log = []
         # According to rules:
         # First, express belts move robots by one tile (express attribute is set to True).
         # Then all belts move robots by one tile (express attribute is set to False).
@@ -624,10 +628,9 @@ class State:
                     # Check if the next tile is rotating belt.
                     for tile in self.get_tiles(robots_next_coordinates[robot]):
                         tile.rotate_robot_on_belt(robot, direction, self)
-                    belts_log.append(self.robots_as_dict())
+                    self.record_log()
                 robot.coordinates = robots_next_coordinates[robot]
                 robot.fall_into_hole(self)
-        return belts_log
 
     def get_next_coordinates_for_belts(self, express_belts):
         """
@@ -657,10 +660,9 @@ class State:
         The method name is not entirely exact: the whole register phase actions
         take place (both tiles and robot's effects).
         """
-        effects_log = []
 
         # Activate belts
-        effects_log.extend(self.move_belts())
+        self.move_belts()
 
         # Activate pusher
         active_pusher = False
@@ -671,7 +673,7 @@ class State:
                 if robot.inactive:
                     break
         if active_pusher:
-            effects_log.append(self.robots_as_dict())
+            self.record_log()
 
         # Activate gear
         active_gear = False
@@ -680,7 +682,7 @@ class State:
                 if tile.rotate_robot(robot, self):
                     active_gear = True
         if active_gear:
-            effects_log.append(self.robots_as_dict())
+            self.record_log()
 
         # Activate laser
         active_laser = False
@@ -691,12 +693,11 @@ class State:
                 if robot.inactive:
                     break
         if active_laser:
-            effects_log.append(self.robots_as_dict())
+            self.record_log()
 
         # Activate robot laser
         for robot in self.get_active_robots():
             robot.shoot(self)
-        effects_log.append(self.robots_as_dict())
 
         # Collect flags, repair robots
         active_flag = False
@@ -707,10 +708,6 @@ class State:
                     active_flag = True
                 if tile.set_new_start(robot, self):
                     active_new_start = True
-        if active_flag or active_new_start:
-            effects_log.append(self.robots_as_dict())
-
-        return effects_log
 
     def set_robots_for_new_turn(self):
         """
@@ -747,12 +744,10 @@ class State:
         For the given register sort the robot's list according to card's priorities.
         Apply cards effects on the sorted robots.
         """
-        register_log = []
         robot_cards = self.get_robots_ordered_by_cards_priority(register)
         for robot, card in robot_cards:
             if not robot.inactive:
-                register_log.extend(card.apply_effect(robot, self))
-        return register_log
+                card.apply_effect(robot, self)
 
     def apply_all_effects(self, registers=5):
         """
@@ -761,23 +756,21 @@ class State:
         At the end ressurect the inactive robots to their starting coordinates.
         registers: default iterations count is 5, can be changed for testing purposes.
         """
-        log = {register: {} for register in range(registers)}
         for register in range(registers):
             # try -  except was introduced for devel purposes - it may happen that
             # robots have no card on hand and we still want to try loading the game
             try:
                 # Check the card's priority
-                log[register] = {"cards": self.apply_register(register)}
+                self.apply_register(register)
 
             except NoCardError:
                 print("No card on hand, continue to tile effects.")
                 pass
 
-            log[register].update({"tile_effects": self.apply_tile_effects(register)})
+            self.apply_tile_effects(register)
 
         # After last register ressurect the robots to their starting coordinates.
         self.set_robots_for_new_turn()
-        return log
 
     def play_round(self):
         """
@@ -790,13 +783,12 @@ class State:
             robot.select_cards(self)
             if robot.power_down:
                 robot.damages = 0
-        log = self.apply_all_effects()
+        self.apply_all_effects()
         self.check_winner()
         self.game_round += 1
         for robot in self.robots:
             robot.clear_robot_attributes(self)
             self.deal_cards(robot)
-        return log
 
     def create_card_pack(self):
         """

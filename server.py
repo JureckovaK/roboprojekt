@@ -41,6 +41,8 @@ class Server:
         # List of connected clients
         self.ws_receivers = []
 
+        self.last_sent_log_position = 0
+
     async def ws_handler(self, request):
         """
         Set up and return the prepared websocket.
@@ -186,12 +188,9 @@ class Server:
         Contain methods play_round, send_message(robots_as_dict),
         send_new_dealt_card.
         """
-        game_log = self.state.play_round()
-        for register in range(5):
-            register_log = game_log[register]["cards"] + game_log[register]["tile_effects"]
-            for log in register_log:
-                await self.send_message(log)
-                await asyncio.sleep(0.5)
+        self.state.play_round()
+        await self.send_message({'log': self.state.log[self.last_sent_log_position:]})
+        self.last_sent_log_position = len(self.state.log)
         if self.state.winners:
             await self.send_message({"winner": self.state.winners})
         await self.send_message("round_over")

@@ -47,6 +47,8 @@ class Receiver:
                         self.winner_time = monotonic()
                     if "available_robots" in message:
                         self.available_robots = self.state.robots_from_dict({"robots": message["available_robots"]})
+                    if 'log' in message:
+                        print(message['log'])
 
 
 def main():
