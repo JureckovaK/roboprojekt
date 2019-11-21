@@ -28,6 +28,11 @@ class Receiver:
         draw_state(self.state, self.winner_time, self.available_robots, self.window)
 
     async def tick_log(self, delay=0.5):
+        """
+        Set the game state for the first element from the recorded game log
+        and delete it, meaning effectively play the step.
+        After the given delay (in seconds), repeat.
+        """
         while True:
             if self.log_to_play:
                 new_state = self.log_to_play.pop(0)
@@ -46,15 +51,13 @@ class Receiver:
 
         async with aiohttp.ClientSession() as session:
             async with session.ws_connect('http://' + self.hostname + ':8080/receiver/') as ws:
-                # Cycle "for" is finished when client disconnects from server
+                # for loop is finished when client disconnects from server
                 async for message in ws:
                     message = message.json()
                     if "game_state" in message:
                         self.state = State.whole_from_dict(message)
                         if self.window is None:
                             self.window = create_window(self.state, self.window_draw)
-                    #if "robots" in message:
-                    #    self.state.robots = self.state.robots_from_dict(message)
                     if "available_robots" in message:
                         self.available_robots = self.state.robots_from_dict({"robots": message["available_robots"]})
                     if 'log' in message:

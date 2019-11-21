@@ -185,8 +185,9 @@ class Server:
 
     async def play_game_round(self):
         """
-        Contain methods play_round, send_message(robots_as_dict),
-        send_new_dealt_card.
+        Run the cards' and tiles' effects.
+        Send the log of the round to clients, winners (if applicable),
+        round end, current robots' state and the new cards for players.
         """
         self.state.play_round()
         await self.send_message({'log': self.state.log[self.last_sent_log_position:]})

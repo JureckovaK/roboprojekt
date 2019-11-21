@@ -217,7 +217,6 @@ class Robot:
         Rotate robot according to a given direction.
         """
         self.direction = self.direction.get_new_direction(where_to)
-        return [state.robots_as_dict()]
 
     def fall_into_hole(self, state):
         """
@@ -387,7 +386,7 @@ class MovementCard(Card):
         """
         Card calls robot's method walk.
         """
-        return robot.walk(self.distance, state)
+        robot.walk(self.distance, state)
 
     def as_dict(self):
         """
@@ -431,7 +430,7 @@ class RotationCard(Card):
         """
         Card calls robot's method rotate.
         """
-        return robot.rotate(self.rotation, state)
+        robot.rotate(self.rotation, state)
 
     def as_dict(self):
         """
@@ -703,14 +702,10 @@ class State:
             robot.shoot(self)
 
         # Collect flags, repair robots
-        active_flag = False
-        active_new_start = False
         for robot in self.get_active_robots():
             for tile in self.get_tiles(robot.coordinates):
-                if tile.collect_flag(robot, self):
-                    active_flag = True
-                if tile.set_new_start(robot, self):
-                    active_new_start = True
+                tile.collect_flag(robot, self)
+                tile.set_new_start(robot, self)
 
     def set_robots_for_new_turn(self):
         """
